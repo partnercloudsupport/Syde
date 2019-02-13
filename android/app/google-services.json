@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "406661585693",
+    "firebase_url": "https://ikode-5508e.firebaseio.com",
+    "project_id": "ikode-5508e",
+    "storage_bucket": "ikode-5508e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:406661585693:android:ed20b9bca06f8bf2",
+        "android_client_info": {
+          "package_name": "com.flutter.enyason.ikode"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "406661585693-qmb6geors1jj2nicqqvp0in4rlm6u8kf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.flutter.enyason.ikode",
+            "certificate_hash": "f04fd699ca4698314ea8030702976c28f54b6cb3"
+          }
+        },
+        {
+          "client_id": "406661585693-39j1auakmkbd69g1gll4gm9m5v9lklt0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfe2tuEGScg_JRnB8XbjGumFJFM8mR37o"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "406661585693-39j1auakmkbd69g1gll4gm9m5v9lklt0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
