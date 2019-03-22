@@ -11,7 +11,6 @@ class ChatRoom extends StatelessWidget {
   Widget build(BuildContext context) {
     return new MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: "Friendlychat",
       home: new ChatScreen(user),
     );
   }
@@ -29,8 +28,16 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final List<ChatMessage> _messages = <ChatMessage>[];
   final TextEditingController _textController = new TextEditingController();
+  ScrollController _scrollController = ScrollController();
   Firestore firestore = Firestore.instance;
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+
+  }
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -40,27 +47,27 @@ class _ChatScreenState extends State<ChatScreen> {
         children: <Widget>[
           //new
 
-           Flexible(
+          Flexible(
             //new
 
             child: StreamBuilder<QuerySnapshot>(
-              stream: Firestore.instance.collection('chatroom').snapshots(),
+              stream: Firestore.instance.collection('chatroom').orderBy('timestamp', descending: true).snapshots(),
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
-                if (snapshot.hasError)
-                  return  Text('Error: ${snapshot.error}');
+                if (snapshot.hasError) return Text('Error: ${snapshot.error}');
                 switch (snapshot.connectionState) {
                   case ConnectionState.waiting:
-                    return  Text('Loading...');
+                    return Text('Loading...');
                   default:
-                    return  ListView(
+                    return ListView(
+                      reverse: true,
+                      controller: _scrollController,
                       children: snapshot.data.documents
                           .map((DocumentSnapshot document) {
                         return ChatMessage(
                           text: document['message'],
                           sender: document['sender'],
                           photoUrl: document['photoUrl'],
-
                         );
 //                          new ListTile(
 //                          title: new Text(document['message']),
@@ -93,11 +100,10 @@ class _ChatScreenState extends State<ChatScreen> {
 //              },
 //            ), //new
           ), //new
-           Divider(height: 1.0), //new
-           Container(
+          Divider(height: 1.0), //new
+          Container(
             //new
-            decoration:
-                 BoxDecoration(color: Theme.of(context).cardColor), //new
+            decoration: BoxDecoration(color: Theme.of(context).cardColor), //new
             child: _buildTextComposer(), //modified
           ), //new
         ], //new
@@ -117,7 +123,10 @@ class _ChatScreenState extends State<ChatScreen> {
             new Flexible(
               child: new TextField(
                 controller: _textController,
-                onSubmitted: _handleSubmitted,
+                onSubmitted: (text){
+                  _handleSubmitted(text,0);
+
+                },
                 decoration:
                     new InputDecoration.collapsed(hintText: "Send a message"),
               ),
@@ -126,7 +135,7 @@ class _ChatScreenState extends State<ChatScreen> {
               margin: new EdgeInsets.symmetric(horizontal: 4.0),
               child: new IconButton(
                   icon: new Icon(Icons.send),
-                  onPressed: () => _handleSubmitted(_textController.text)),
+                  onPressed: () => _handleSubmitted(_textController.text,0)),
             ),
           ],
         ),
@@ -134,14 +143,31 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  void _handleSubmitted(String text) {
+  void _handleSubmitted(String text,int type) async {
     _textController.clear();
 
-    var map = {"photoUrl": widget.user.photoUrl, "message": text, "sender": widget.user.displayName};
-    Firestore.instance
-        .collection("chatroom")
-        .add(map)
-        .whenComplete(() => print("done"));
+    var map = {
+      "photoUrl": widget.user.photoUrl,
+      "message": text,
+      "sender": widget.user.displayName,
+      "type": type,
+      "timestamp":DateTime.now().millisecondsSinceEpoch.toString()
+    };
+
+    DocumentReference documentReference = Firestore.instance
+        .collection("chatroom").document(DateTime.now().millisecondsSinceEpoch.toString());
+
+    Firestore.instance.runTransaction((transaction) async{
+
+      await transaction.set(documentReference, map);
+    });
+
+
+//    await Firestore.instance
+//        .collection("chatroom")
+//        .add(map);
+
+    _scrollController.animateTo(0.0, duration: Duration(milliseconds: 300), curve: Curves.easeOut);
 
 //    ChatMessage message = new ChatMessage(
 //      widget.user,
@@ -156,9 +182,9 @@ class _ChatScreenState extends State<ChatScreen> {
 }
 
 class ChatMessage extends StatelessWidget {
-  ChatMessage({this.sender, this.text,this.photoUrl});
+  ChatMessage({this.sender, this.text, this.photoUrl});
 
-  final String text, sender,photoUrl;
+  final String text, sender, photoUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -176,7 +202,7 @@ class ChatMessage extends StatelessWidget {
                 shape: CircleBorder(),
                 color: Colors.transparent,
                 child: CircleAvatar(
-                  backgroundImage: NetworkImage( "$photoUrl?height=500"),
+                  backgroundImage: NetworkImage("$photoUrl?height=500"),
                   child: InkWell(
                     onTap: () {
                       //goto user profile
@@ -189,8 +215,7 @@ class ChatMessage extends StatelessWidget {
           new Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              new Text(sender,
-                  style: Theme.of(context).textTheme.subhead),
+              new Text(sender, style: Theme.of(context).textTheme.subhead),
               new Container(
                 margin: const EdgeInsets.only(top: 5.0),
                 child: new Text(text),

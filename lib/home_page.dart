@@ -1,14 +1,16 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/services.dart';
-import 'package:ikode/Auth/auth.dart';
+import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ikode/BottomTabPages/page_chatroom.dart';
+import 'package:ikode/BottomTabPages/page_home.dart';
+import 'package:ikode/BottomTabPages/page_messages.dart';
+import 'package:ikode/pages/notification_page.dart';
+import 'package:ikode/pages/thread_post.dart';
 
 class HomePage extends StatefulWidget {
-  final VoidCallback homeCallBack;
   final FirebaseUser user;
 
-  HomePage({this.homeCallBack, this.user});
+  const HomePage({this.user});
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -24,7 +26,9 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         key: _scaffoldKey,
-        drawer: Drawer(child: ListView(children: renderDrawerChildren())),
+        drawer: Drawer(
+          child: DrawerChildren(_user),
+        ),
         appBar: renderAppBar(),
         body: renderBody(),
         bottomNavigationBar: renderBottomNavBar());
@@ -36,25 +40,20 @@ class _HomePageState extends State<HomePage> {
     getUser();
   }
 
-  getUser() async {
-    setState(() {
-      _user = widget.user;
-
-      print(_user.displayName);
-    });
+  getUser() {
+    _user = widget.user;
   }
 
   Widget renderBody() {
     if (_currentTabPosition == 0) {
-      return Center(
-        child: Text("Posts will be displayed here..."),
-      );
+      return ThreadPage(user: _user,);
     } else if (_currentTabPosition == 1) {
-      return ChatRoom(_user);
-    } else if (_currentTabPosition == 2) {
-      return Center(
-        child: Text("DM goes here.."),
+      return Container(
+        child: Text("Messages"),
+
       );
+    } else {
+      return DirectMessaging();
     }
   }
 
@@ -62,33 +61,91 @@ class _HomePageState extends State<HomePage> {
     return AppBar(
       iconTheme: IconThemeData(color: Colors.grey),
       actions: <Widget>[
-        Icon(Icons.notifications_none),
-        SizedBox(
-          width: 8.0,
-        ),
+
+
+
+
+    InkWell(
+      borderRadius: BorderRadius.circular(20),
+      onTap: (){
+
+      if (_currentTabPosition==0) {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (BuildContext context) {
+              return ThreadPost();
+            }));
+
+          }else{
+            Navigator.push(
+                context, MaterialPageRoute(builder: (BuildContext context) {
+              return DirectMessaging();
+            }));
+
+          }
+      },
+      child:Padding(
+        padding: const EdgeInsets.all(5.0),
+        child: Icon(Icons.add),
+      ) ,
+    ),
+
+        InkWell(
+
+          borderRadius: BorderRadius.circular(20),
+          radius: 5,
+          onTap: (){
+
+            Navigator.push(
+                context, MaterialPageRoute(builder: (BuildContext context) {
+              return NotificationScreen();
+            }));
+
+
+          },
+          child:Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: Icon(Icons.notifications_none),
+          ) ,
+
+        )
+
+//        IconButton(padding: EdgeInsets.all(0.0),icon: Icon(Icons.notifications_none), onPressed: (){
+//
+//
+//        })
+
       ],
       textTheme:
           TextTheme(title: TextStyle(color: Colors.black, fontSize: 18.0)),
       backgroundColor: Colors.white,
       leading: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Material(
-          elevation: 1.0,
-          shape: CircleBorder(),
-          color: Colors.transparent,
-          child: CircleAvatar(
-            backgroundImage:_user==null?Icon(Icons.account_circle): NetworkImage(_user.photoUrl + "?height=500"),
-            child: InkWell(
-              onTap: () {
+          padding: const EdgeInsets.all(8.0),
+          child: FloatingActionButton(
+              child: _user == null
+                  ? Icon(Icons.account_circle)
+                  : CircleAvatar(
+                      backgroundImage:
+                          NetworkImage(_user.photoUrl + "?height=500"),
+                    ),
+              onPressed: () {
                 _scaffoldKey.currentState.openDrawer();
-              },
-            ),
-          ),
-        ),
-      ),
+              })),
       title: Text(_title),
     );
   }
+
+//  Material(
+//  elevation: 1.0,
+//  shape: CircleBorder(),
+//  color: Colors.transparent,
+//  child: CircleAvatar(
+//  backgroundImage: NetworkImage(_user.photoUrl + "?height=500"),
+//  child: InkWell(
+//  onTap: () {
+//  },
+//  ),
+//  ),
+//  ),
 
   BottomNavigationBar renderBottomNavBar() {
     return BottomNavigationBar(
@@ -100,13 +157,18 @@ class _HomePageState extends State<HomePage> {
             break;
           case 1:
             _title = "Chatroom";
+            Navigator.push(context, MaterialPageRoute(builder:(BuildContext context){
+              return ChatRoom(_user);
+            }));
             break;
           case 2:
             _title = "Messages";
             break;
         }
-        _currentTabPosition = pos;
-        setState(() {});
+        setState(() {
+          _currentTabPosition = pos;
+
+        });
       },
       items: [
         BottomNavigationBarItem(icon: Icon(Icons.home), title: Text("Home")),
@@ -119,59 +181,87 @@ class _HomePageState extends State<HomePage> {
   }
 
   List<Widget> renderDrawerChildren() {
-    return <Widget>[
-      UserAccountsDrawerHeader(
-        decoration: BoxDecoration(color: Colors.grey[500]),
-        accountEmail: Container(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[Text("25 Posts")],
+    return <Widget>[];
+  }
+}
+
+class DrawerChildren extends StatelessWidget {
+  final FirebaseUser _user;
+
+  DrawerChildren(this._user);
+
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      children: <Widget>[
+        UserAccountsDrawerHeader(
+          decoration: BoxDecoration(color: Colors.grey[500]),
+          accountEmail: Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[Text("25 Posts")],
+            ),
+          ),
+          accountName: Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(_user == null ? "Guest" : _user.displayName),
+                Text(
+                  _user == null ? "" : _user.email,
+                ),
+              ],
+            ),
+          ),
+          currentAccountPicture: CircleAvatar(
+            backgroundImage: NetworkImage(
+                _user == null ? "avatar" : _user.photoUrl + "?height=500"),
           ),
         ),
-        accountName: Container(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text(_user == null ? "Guest" : _user.displayName),
-              Text(
-                _user == null ? "" : _user.email,
-              ),
-            ],
-          ),
+        ListTile(
+          leading: Icon(Icons.person_outline),
+          title: Text("Profile"),
         ),
-        currentAccountPicture: CircleAvatar(
-          backgroundImage: NetworkImage(
-              _user == null ? "avatar" : _user.photoUrl + "?height=500"),
+        ListTile(
+          leading: Icon(Icons.playlist_play),
+          title: Text("TDL"),
         ),
-      ),
-      ListTile(
-        leading: Icon(Icons.person_outline),
-        title: Text("Profile"),
-      ),
-      ListTile(
-        leading: Icon(Icons.playlist_play),
-        title: Text("TDL"),
-      ),
-      ListTile(
-        leading: Icon(Icons.bookmark_border),
-        title: Text("Bookmarks"),
-      ),
-      ListTile(
-        leading: Icon(Icons.chat_bubble_outline),
-        title: Text("General"),
-      ),
-      ListTile(
-        onTap: () {
-          Auth().logUserOut(FirebaseAuth.instance).then((val) {
-            print("out now!");
-            widget.homeCallBack();
-          });
-        },
-        leading: Icon(Icons.exit_to_app),
-        title: Text("Log out"),
-      ),
-    ];
+        ListTile(
+          leading: Icon(Icons.bookmark_border),
+          title: Text("Bookmarks"),
+        ),
+        ListTile(
+          leading: Icon(Icons.chat_bubble_outline),
+          title: Text("General"),
+        ),
+        ListTile(
+          onTap: () {
+            print("auth log out ");
+
+            logUserOut();
+
+//            Auth().logUserOut(FirebaseAuth.instance).then((val) {
+//              authBloc.authSink.add(false);
+//            });
+          },
+          leading: Icon(Icons.exit_to_app),
+          title: Text("Log out"),
+        ),
+      ],
+    );
+  }
+
+ logUserOut() {
+//    await _googleSignIn.disconnect();
+//    await _googleSignIn.signOut();
+     FirebaseAuth.instance.signOut().then((val){
+       _googleSignIn.disconnect();
+       _googleSignIn.signOut();
+
+     });
   }
 }

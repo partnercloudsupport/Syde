@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:ikode/Auth/auth.dart';
-import 'package:ikode/facebook_login_page.dart';
+import 'package:ikode/google_login_page.dart';
 import 'package:ikode/home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
-void main() {
-  runApp(new Root());
-}
 
 class Root extends StatefulWidget {
   @override
@@ -14,54 +9,58 @@ class Root extends StatefulWidget {
 }
 
 class _RootState extends State<Root> {
-  AuthState _authState;
-  FirebaseUser user;
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _authState = AuthState.loggedOut;
-
-    FirebaseAuth.instance.currentUser().then((user) {
-      if (user == null) {
-        print("no user found!");
-        loggedOut();
-      } else
-        this.user = user;
-      print(user.displayName);
-      loggedIn();
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    if (_authState == AuthState.loggedIn) {
-      return HomePage(
-          homeCallBack: loggedOut,user: user,
-      );
-    } else if (_authState == AuthState.loggedOut) {
-      return LogInPage(
-        loginCallBack: loggedIn,
-        baseAuth: Auth(),
-      );
-    }
-  }
+    return StreamBuilder<FirebaseUser>(
+      stream: FirebaseAuth.instance.onAuthStateChanged,
+      builder: (BuildContext context, AsyncSnapshot<FirebaseUser> snapshot) {
+        print(snapshot.connectionState);
+        print(snapshot.data);
+        print(snapshot.hasData);
 
-  loggedOut() {
-    setState(() {
-      _authState = AuthState.loggedOut;
-      print("called log out");
-    });
-  }
 
-  loggedIn() {
-    setState(() {
-      print("called log in");
+        if (snapshot.hasData) {
 
-      _authState = AuthState.loggedIn;
-    });
+          Navigator.push(
+              context, MaterialPageRoute(builder: (BuildContext context) {
+            return HomePage(
+              user: snapshot.data,
+            );
+          }));
+
+          } else {
+
+          Navigator.push(
+              context, MaterialPageRoute(builder: (BuildContext context) {
+            return LogInPage();
+          }));
+
+//            return LogInPage();
+        }
+
+//        return Container(
+//
+//          child: Text("Root"),
+//
+//        );
+      },
+    );
   }
 }
 
-enum AuthState { loggedIn, loggedOut }
+class WaitingScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        color: Colors.white,
+        child: Center(
+          child: Text(
+            "Syde",
+            style: TextStyle(color: Colors.blue, fontSize: 29.0),
+          ),
+        ),
+      ),
+    );
+  }
+}
