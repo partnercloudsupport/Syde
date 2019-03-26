@@ -6,6 +6,8 @@ import 'package:ikode/BottomTabPages/page_home.dart';
 import 'package:ikode/BottomTabPages/page_messages.dart';
 import 'package:ikode/pages/notification_page.dart';
 import 'package:ikode/pages/thread_post.dart';
+import 'package:progress_indicators/progress_indicators.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 
 class HomePage extends StatefulWidget {
   final FirebaseUser user;
@@ -21,6 +23,7 @@ class _HomePageState extends State<HomePage> {
   int _currentTabPosition = 0;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   String _title = "Home";
+
 
   @override
   Widget build(BuildContext context) {
@@ -46,11 +49,12 @@ class _HomePageState extends State<HomePage> {
 
   Widget renderBody() {
     if (_currentTabPosition == 0) {
-      return ThreadPage(user: _user,);
+      return ThreadPage(
+        user: _user,
+      );
     } else if (_currentTabPosition == 1) {
       return Container(
         child: Text("Messages"),
-
       );
     } else {
       return DirectMessaging();
@@ -61,59 +65,46 @@ class _HomePageState extends State<HomePage> {
     return AppBar(
       iconTheme: IconThemeData(color: Colors.grey),
       actions: <Widget>[
-
-
-
-
-    InkWell(
-      borderRadius: BorderRadius.circular(20),
-      onTap: (){
-
-      if (_currentTabPosition==0) {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (BuildContext context) {
-              return ThreadPost();
-            }));
-
-          }else{
-            Navigator.push(
-                context, MaterialPageRoute(builder: (BuildContext context) {
-              return DirectMessaging();
-            }));
-
-          }
-      },
-      child:Padding(
-        padding: const EdgeInsets.all(5.0),
-        child: Icon(Icons.add),
-      ) ,
-    ),
+        InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: () {
+            if (_currentTabPosition == 0) {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (BuildContext context) {
+                return ThreadPost();
+              }));
+            } else {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (BuildContext context) {
+                return DirectMessaging();
+              }));
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: Icon(Icons.add),
+          ),
+        ),
 
         InkWell(
-
           borderRadius: BorderRadius.circular(20),
           radius: 5,
-          onTap: (){
-
-            Navigator.push(
-                context, MaterialPageRoute(builder: (BuildContext context) {
+          onTap: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (BuildContext context) {
               return NotificationScreen();
             }));
-
-
           },
-          child:Padding(
+          child: Padding(
             padding: const EdgeInsets.all(5.0),
             child: Icon(Icons.notifications_none),
-          ) ,
-
+          ),
         )
 
 //        IconButton(padding: EdgeInsets.all(0.0),icon: Icon(Icons.notifications_none), onPressed: (){
 //
 //
 //        })
-
       ],
       textTheme:
           TextTheme(title: TextStyle(color: Colors.black, fontSize: 18.0)),
@@ -157,7 +148,8 @@ class _HomePageState extends State<HomePage> {
             break;
           case 1:
             _title = "Chatroom";
-            Navigator.push(context, MaterialPageRoute(builder:(BuildContext context){
+            Navigator.push(context,
+                MaterialPageRoute(builder: (BuildContext context) {
               return ChatRoom(_user);
             }));
             break;
@@ -167,7 +159,6 @@ class _HomePageState extends State<HomePage> {
         }
         setState(() {
           _currentTabPosition = pos;
-
         });
       },
       items: [
@@ -185,6 +176,8 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
+ProgressDialog pr;
+
 class DrawerChildren extends StatelessWidget {
   final FirebaseUser _user;
 
@@ -192,8 +185,12 @@ class DrawerChildren extends StatelessWidget {
 
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
+
   @override
   Widget build(BuildContext context) {
+    pr = new ProgressDialog(context);
+    pr.setMessage('logging out...');
+
     return ListView(
       children: <Widget>[
         UserAccountsDrawerHeader(
@@ -242,6 +239,15 @@ class DrawerChildren extends StatelessWidget {
           onTap: () {
             print("auth log out ");
 
+
+            Navigator.pop(context);
+
+//            if(!pr.isShowing())
+//              pr.show();
+//            Future.delayed(Duration(seconds: 3)).whenComplete((){
+//              if(pr.isShowing())
+//                pr.hide();
+//            });
             logUserOut();
 
 //            Auth().logUserOut(FirebaseAuth.instance).then((val) {
@@ -255,13 +261,12 @@ class DrawerChildren extends StatelessWidget {
     );
   }
 
- logUserOut() {
+  logUserOut() {
 //    await _googleSignIn.disconnect();
 //    await _googleSignIn.signOut();
-     FirebaseAuth.instance.signOut().then((val){
-       _googleSignIn.disconnect();
-       _googleSignIn.signOut();
-
-     });
+    FirebaseAuth.instance.signOut().then((val) {
+      _googleSignIn.disconnect();
+      _googleSignIn.signOut();
+    });
   }
 }

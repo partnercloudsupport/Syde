@@ -7,9 +7,23 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ikode/Auth/auth.dart';
+import 'package:ikode/google_login_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:ikode/main.dart';
 
 void main() {
   
+  testWidgets("login widget test", (WidgetTester tester)async{
+
+    await tester.pumpWidget(LogInPage());
+
+
+    await tester.tap(find.byType(InkWell));
+    
+    expect(Auth().signInWithCredentials(Auth().getFireBAseAuth()), FirebaseUser);
+
+
+  });
 }
