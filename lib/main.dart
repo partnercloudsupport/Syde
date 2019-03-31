@@ -16,69 +16,31 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   @override
-  void initState() {
-    // TODO: implement initState
-
-//    Firestore.instance.settings(timestampsInSnapshotsEnabled: true,persistenceEnabled: true);
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    //create a stream build to listen to the auth changes
     StreamBuilder<FirebaseUser> builder = new StreamBuilder(
         stream: FirebaseAuth.instance.onAuthStateChanged,
         builder: (context, asyncSnapshot) {
-          print(asyncSnapshot.connectionState);
-          print("shot =  ${asyncSnapshot.data}");
-          print("data = ${asyncSnapshot.hasData}");
-          print("error = ${asyncSnapshot.hasError}");
+          debugCheckHasMediaQuery(context);
 
-          if(asyncSnapshot.connectionState == ConnectionState.waiting){
+          if (asyncSnapshot.connectionState == ConnectionState.waiting) {
             return Container(
               color: Colors.white,
-            ) ;
+            );
           }
 
+          //render login page if user is null
           if (asyncSnapshot.data == null) {
             return LogInPage();
           }
 
+          //render home page if user is null
           return HomePage(
             user: asyncSnapshot.data,
           );
-        }
-
-//          print("shot =  ${asyncSnapshot.data}");
-//          print("data = ${asyncSnapshot.hasData}");
-//          print("error = ${asyncSnapshot.hasError}");
-//          if (asyncSnapshot.hasError) {
-//            return  Text("Error!");
-//
-//          }else {
-//
-//
-//        }
-
-        );
+        });
 
     return MaterialApp(
         title: "Syde", debugShowCheckedModeBanner: false, home: builder);
-  }
-}
-
-class WaitingScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        color: Colors.white,
-        child: Center(
-          child: Text(
-            "Syde",
-            style: TextStyle(color: Colors.blue, fontSize: 29.0),
-          ),
-        ),
-      ),
-    );
   }
 }
