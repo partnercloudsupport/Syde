@@ -3,29 +3,32 @@ import 'package:ikode/Auth/auth.dart';
 
 class AuthBloc {
   final BaseAuth baseAuth;
-  StreamController<ClickEvents> _controller = StreamController<ClickEvents>();
+  StreamController<LogInEvents> _controller = StreamController<LogInEvents>();
 
   AuthBloc(this.baseAuth) {
     _inputStream().listen((event) {
-      if (event is ClickEvents) {
+      if (event is GoogleSignIn) {
         baseAuth.signInWithCredentials(baseAuth.getFireBAseAuth());
+      }else{
+        print("facebook log in");
       }
     });
   }
 
-  Stream<ClickEvents> _inputStream() {
+  Stream<LogInEvents> _inputStream() {
     return _controller.stream;
   }
 
-  Sink<ClickEvents> get eventSink => _controller.sink;
+  Sink<LogInEvents> get eventSink => _controller.sink;
 
   void dispose() {
     _controller.close();
   }
 }
 
-abstract class ClickEvents {}
+abstract class LogInEvents {}
 
-class LogInClick extends ClickEvents {}
+class GoogleSignIn extends LogInEvents {}
+class FaceBookSignIn extends LogInEvents{}
 
 final authBloc = AuthBloc(Auth());

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ikode/Model/Story.dart';
 
 class DetailedScreen extends StatefulWidget {
+  final Story story;
+
+  const DetailedScreen({this.story});
+
   @override
   _DetailedScreenState createState() => _DetailedScreenState();
-
-  DetailedScreen({this.user});
-
-  final FirebaseUser user;
 }
 
 class _DetailedScreenState extends State<DetailedScreen> {
@@ -17,316 +18,176 @@ class _DetailedScreenState extends State<DetailedScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          elevation: 0.0,
-          backgroundColor: Color(45),
-          leading: IconButton(
-              icon: Icon(
-                Icons.navigate_before,
-                color: Colors.grey,
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-              }),
-        ),
-        body: Column(
-          children: <Widget>[
-            Expanded(
-              child: CustomScrollView(
-                slivers: <Widget>[
-//
-//
-
-                  SliverList(
-                      delegate: SliverChildListDelegate([
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          left: 16.0, top: 8.0, right: 16.0),
-                      child: Text(
-                        "My Journey as a Flutter Developer with DevC Uyo",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 18.0),
-                      ),
-                    ),
-
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          left: 16.0, top: 16.0, bottom: 18.0),
-                      child: Row(
-                        children: <Widget>[
-                          CircleAvatar(
-                            radius: 20.0,
-                            backgroundImage: NetworkImage(
-                                widget.user.photoUrl + "?height=500"),
-                          ),
-                          SizedBox(
-                            width: 10.0,
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                widget.user.displayName,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12.0),
-                              ),
-                              Text(
-                                "new user",
-                                style: TextStyle(
-                                    fontSize: 10.0, color: Colors.grey),
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
-                    ),
-
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text(textBody,
-                          style: TextStyle(
-                              fontSize: 14.0, color: Colors.grey, height: 2.0)),
-                    ),
-
-//                    Expanded(
-//                      child: ListView.builder(
-//                          itemCount: 10,
-//                          itemBuilder: (context, pos) {
-//                        return Text("Comment $pos");
-//                      }),
-//                    )
-
-//              Container(color: Colors.red, height: 150.0),
-//                    TextField(
-//                      maxLines: null,
-//                      keyboardType: TextInputType.multiline,
-//                      decoration: InputDecoration(
-//                          focusedBorder: UnderlineInputBorder(
-//                              borderSide: BorderSide(color: Colors.grey)),
-//                          hintText: "share your experience"),
-//                    )
-                  ])),
-                  SliverGrid(
-
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      childAspectRatio: 4.0,
-                        crossAxisCount: 3,
-                      crossAxisSpacing: 10.0
-
-
-                    ),
-//                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-//                      maxCrossAxisExtent: 200.0,
-//                      mainAxisSpacing: 10.0,
-//                      crossAxisSpacing: 10.0,
-//                      childAspectRatio: 4.0,
-//                    ),
-                    delegate: SliverChildBuilderDelegate(
-
-                      (BuildContext context, int index) {
-
-                        return Container(
-                          alignment: Alignment.center,
-                          color: Colors.teal[100 * (index % 9)],
-                          child: Text('grid item $index'),
-                        );
-                      },
-                      childCount: 20,
-
-                    ),
-                  ),
-
-
-//                  SliverList(
-//
-//                      delegate: SliverChildBuilderDelegate((context,pos){
-//
-////                        return ListView.builder(
-////                  itemCount: 10,i
-////                  itemBuilder: (context,index){
-//                return Text("Comment $pos");
-//
-////              });
-//
-//                  })),
-//
-//                  SliverFixedExtentList(
-//                    itemExtent: 50.0,
-//                    delegate: SliverChildBuilderDelegate(
-//
-//                      (BuildContext context, int index) {
-//                        return Container(
-//                          alignment: Alignment.center,
-//                          color: Colors.lightBlue[100 * (index % 9)],
-//                          child: Text('list item $index'),
-//                        );
-//                      },
-//                    ),
-//                  ),
-
-//                  SliverToBoxAdapter(
-//                    child: Container(
-//                      height: 100.0,
-//                      child: ListView.builder(
-//                        scrollDirection: Axis.vertical,
-//                        itemCount: 10,
-//                        itemBuilder: (context, index) {
-//                          return Container(
-//                            width: 100.0,
-//                            child: Card(
-//                                child: Padding(
-//                              padding: const EdgeInsets.all(8.0),
-//                              child: Image(
-//                                image: AssetImage("assets/google.png"),
-//                                width: 70,
-//                                height: 50,
-//                              ),
-//                            )),
-//                          );
-//                        },
-//                      ),
-//                    ),
-//                  )
-                ],
-              ),
+      appBar: AppBar(
+        elevation: 0.0,
+        backgroundColor: Color(45),
+        leading: IconButton(
+            icon: Icon(
+              Icons.navigate_before,
+              color: Colors.grey,
             ),
+            onPressed: () {
+              Navigator.pop(context);
+            }),
+      ),
+      body: Stack(
+        children: <Widget>[
+          Positioned(child: _buildBody()),
+          Positioned(
+              bottom: 0.0, right: 0.0, left: 0.0, child: _buildTextComposer()),
+        ],
+      ),
+    );
+  }
 
-//            Expanded(
-//              child: ListView(
-//                children: <Widget>[
+  Widget _buildBody() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 50.0),
+      child: ListView(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(left: 16.0, top: 8.0, right: 16.0),
+            child: Text(
+              "My Journey as a Flutter Developer with DevC Uyo",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
+            ),
+          ),
+          Padding(
+              padding:
+                  const EdgeInsets.only(left: 16.0, top: 16.0, bottom: 18.0),
+              child: Row(
 //
-//
-////              ListView.builder(
-////                  itemCount: 10,
-////                  itemBuilder: (context,index){
-////                return Text("Comment $index");
-////
-////              })
-//                ],
-//              ),
-//            ),
+                  children: <Widget>[
+                    CircleAvatar(
+                      radius: 20.0,
+                      backgroundImage: NetworkImage(
+                          widget.story.user["user_photo"] + "?height=500"),
+                    ),
+                    SizedBox(
+                      width: 10.0,
+                    ),
 
-            Container(
-                color: Colors.white,
-                height: 50.0,
-                alignment: Alignment.bottomCenter,
-//              decoration: BoxDecoration(color: Theme.of(context).cardColor), //new
-
-                child: _buildTextComposer()),
 //
-          ],
-        )
-
-//      Container(
-//        child: Stack(
-//          children: <Widget>[
-//
-//
-//            Container(
-//              child: ListView(
-//                children: <Widget>[
-//
-//
-//                  Padding(
-//                    padding: const EdgeInsets.only(left: 16.0,top: 8.0,right: 16.0),
-//                    child: Text("My Journey as a Flutter Developer with DevC Uyo",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18.0),),
-//                  ),
-//
-//                  Padding(
-//                    padding: const EdgeInsets.only(left: 16.0,top: 16.0,bottom: 18.0),
-//                    child: Row(
-//
-//                      children: <Widget>[
-//                        CircleAvatar(
-//                          radius: 20.0,
-//                          backgroundImage:
-//                          NetworkImage(widget.user.photoUrl + "?height=500"),
-//                        ) ,
-//                        SizedBox(width: 10.0,),
-//
-//
-//                        Column(
-//                          crossAxisAlignment: CrossAxisAlignment.start,
-//                          children: <Widget>[
-//                            Text(widget.user.displayName,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12.0),),
-//                            Text("new user",style: TextStyle(fontSize: 10.0,color: Colors.grey),),
-//
-//
-//                          ],
-//
-//                        )
-//
-//
-//                      ],
-//
-//                    ),
-//                  ),
-//
-//                  Padding(
-//                    padding: const EdgeInsets.all(16.0),
-//                    child: Text(textBody,style: TextStyle(fontSize: 14.0, color: Colors.grey,height: 2.0)),
-//                  ),
-//
-////              ListView.builder(
-////                  itemCount: 10,
-////                  itemBuilder: (context,index){
-////                return Text("Comment $index");
-////
-////              })
-//
-//                ],
-//
-//              ),
-//            ),
-//
-//               Container(
-//color: Colors.white,
-//                height: 50.0,
-//                alignment: Alignment.bottomCenter,
-////              decoration: BoxDecoration(color: Theme.of(context).cardColor), //new
-//
-//                  child: _buildTextComposer()
-//
-//              ),
-//
-//
-//
-//          ],
-//        ),
-//      ),
-        );
+                    Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            widget.story.user["user_name"],
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 12.0),
+                          ),
+                          Text(
+                            "Mobile Engineer",
+                            style:
+                                TextStyle(fontSize: 10.0, color: Colors.grey),
+                          ),
+                        ])
+                  ])),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(textBody,
+                style:
+                    TextStyle(fontSize: 14.0, color: Colors.grey, height: 2.0)),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ListView.builder(
+                itemCount: 5,
+                physics: ClampingScrollPhysics(),
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  return _buildCommentItem();
+                }),
+          )
+        ],
+      ),
+    );
   }
 
   Widget _buildTextComposer() {
-    return new IconTheme(
-      //new
-      data: new IconThemeData(color: Colors.grey), //new
-      child: new Container(
-        //modified
-        margin: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: Row(
-          children: <Widget>[
-            Flexible(
-              child: TextField(
-                onSubmitted: (text) {},
-                decoration: InputDecoration.collapsed(hintText: "comment"),
-              ),
-            ),
-            Icon(Icons.comment),
-            Container(
-              margin: new EdgeInsets.symmetric(horizontal: 4.0),
-              child: Transform.rotate(
-                angle: -10,
-                child: IconButton(
-                  onPressed: () {},
-                  icon: new Icon(Icons.reply),
+    return Row(
+      children: <Widget>[
+        Expanded(
+          child: Container(
+            color: Colors.white,
+            child: Row(
+              children: <Widget>[
+                Flexible(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left:8.0,right: 8.0),
+                    child: TextField(
+                      maxLines: 2,
+                      keyboardType: TextInputType.multiline,
+                      textCapitalization: TextCapitalization.sentences,
+                      textInputAction: TextInputAction.send,
+                      style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
+                      onSubmitted: (text) {},
+                      decoration: InputDecoration.collapsed(hintText: "Write a comment"),
+                    ),
+                  ),
+//                      flex: 1,
                 ),
-              ),
-            )
-          ],
-        ),
-      ), //new
+
+           FlatButton(onPressed: (){}, child: Text("Send"))
+              ],
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+
+  Widget _buildCommentItem(){
+
+    return Padding(
+      padding: const EdgeInsets.only(left:8.0,right: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+
+          CircleAvatar(
+            radius: 20.0,
+            backgroundImage: NetworkImage(
+                widget.story.user["user_photo"] + "?height=500"),
+          ),
+
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+
+                    Padding(
+                      padding: const EdgeInsets.only(left:8.0,right: 8.0,bottom: 8.0),
+                      child: Text("James Esther",style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                    Text("March 30,2019",style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w300,fontSize: 12.0))
+                  ],
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0,right: 8.0),
+                  child: Text("Yea! me too! I love layering my codebase with MVP design pattern",
+                      style: TextStyle(color: Colors.grey, fontWeight: FontWeight.normal,fontSize: 12.0)),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
+                  child: Divider(
+                    height: 2.0,color: Colors.grey,
+                  ),
+                )
+
+              ],
+            ),
+
+          )
+
+        ],
+      ),
     );
   }
 }

@@ -144,7 +144,7 @@ class _HomePageState extends State<HomePage> {
       onTap: (pos) {
         switch (pos) {
           case 0:
-            _title = "Home";
+            _title = "Stories";
             break;
           case 1:
             _title = "Chatroom";
@@ -162,7 +162,7 @@ class _HomePageState extends State<HomePage> {
         });
       },
       items: [
-        BottomNavigationBarItem(icon: Icon(Icons.home), title: Text("Home")),
+        BottomNavigationBarItem(icon: Icon(Icons.blur_on), title: Text("Stories")),
         BottomNavigationBarItem(
             icon: Icon(Icons.chat_bubble_outline), title: Text("Chatroom")),
         BottomNavigationBarItem(

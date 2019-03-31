@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ikode/Model/Story.dart';
 import 'package:ikode/pages/detailed_page.dart';
 import 'package:ikode/pages/thread_post.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -94,10 +95,11 @@ class _ThreadPageState extends State<ThreadPage> {
                           InkWell(
                             onTap: () {
                               //
+                              Story storyDetails = Story.fromMap(document.data.documents[index].data);
                               Navigator.push(context, MaterialPageRoute(
                                   builder: (BuildContext context) {
                                 return DetailedScreen(
-                                  user: widget.user,
+                                  story: storyDetails,
                                 );
                               }));
                             },

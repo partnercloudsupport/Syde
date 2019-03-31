@@ -8,7 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ikode/Auth/auth.dart';
-import 'package:ikode/google_login_page.dart';
+import 'package:ikode/login_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:ikode/main.dart';

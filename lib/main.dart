@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ikode/Auth/auth.dart';
-import 'package:ikode/google_login_page.dart';
+import 'package:ikode/login_page.dart';
 import 'package:ikode/home_page.dart';
 import 'package:ikode/root.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -28,12 +28,19 @@ class _MyAppState extends State<MyApp> {
     StreamBuilder<FirebaseUser> builder = new StreamBuilder(
         stream: FirebaseAuth.instance.onAuthStateChanged,
         builder: (context, asyncSnapshot) {
+          print(asyncSnapshot.connectionState);
           print("shot =  ${asyncSnapshot.data}");
           print("data = ${asyncSnapshot.hasData}");
           print("error = ${asyncSnapshot.hasError}");
+
+          if(asyncSnapshot.connectionState == ConnectionState.waiting){
+            return Container(
+              color: Colors.white,
+            ) ;
+          }
+
           if (asyncSnapshot.data == null) {
             return LogInPage();
-
           }
 
           return HomePage(
