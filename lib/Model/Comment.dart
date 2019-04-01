@@ -2,9 +2,9 @@
 
 class Comment{
 
-  String commentBody,commentId,userId;
+  String commentBody,commentId,userId,timeStamp;
 
-  Comment(this.commentBody, this.commentId, this.userId);
+  Comment(this.commentBody, this.commentId, this.userId, this.timeStamp);
 
 
 }
