@@ -10,8 +10,8 @@ import 'package:progress_indicators/progress_indicators.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 
 class HomePage extends StatefulWidget {
-  final FirebaseUser user;
 
+  final FirebaseUser user;
   const HomePage({this.user});
 
   @override
@@ -19,10 +19,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  FirebaseUser _user;
-  int _currentTabPosition = 0;
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  String _title = "Home";
+
+  FirebaseUser _user; //current user
+  int _currentTabPosition = 0; // tab navigation position
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();// key to reference the scaffold widget
+  String _title = "Stories";
 
 
   @override
@@ -48,6 +49,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget renderBody() {
+
+    // here we render the widget based on the tab position
     if (_currentTabPosition == 0) {
       return ThreadPage(
         user: _user,
@@ -62,6 +65,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   AppBar renderAppBar() {
+    //this method builds the app bar and renders it to the screen
     return AppBar(
       iconTheme: IconThemeData(color: Colors.grey),
       actions: <Widget>[
@@ -101,10 +105,6 @@ class _HomePageState extends State<HomePage> {
           ),
         )
 
-//        IconButton(padding: EdgeInsets.all(0.0),icon: Icon(Icons.notifications_none), onPressed: (){
-//
-//
-//        })
       ],
       textTheme:
           TextTheme(title: TextStyle(color: Colors.black, fontSize: 18.0)),
@@ -125,20 +125,10 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-//  Material(
-//  elevation: 1.0,
-//  shape: CircleBorder(),
-//  color: Colors.transparent,
-//  child: CircleAvatar(
-//  backgroundImage: NetworkImage(_user.photoUrl + "?height=500"),
-//  child: InkWell(
-//  onTap: () {
-//  },
-//  ),
-//  ),
-//  ),
 
+  // renders the bottom tabs to the screen
   BottomNavigationBar renderBottomNavBar() {
+
     return BottomNavigationBar(
       currentIndex: _currentTabPosition,
       onTap: (pos) {
@@ -178,12 +168,14 @@ class _HomePageState extends State<HomePage> {
 
 ProgressDialog pr;
 
+// this class creates a list of items to be displayed on the drawer
+// stateless widget is extended to provide another context different from the parent
 class DrawerChildren extends StatelessWidget {
   final FirebaseUser _user;
 
   DrawerChildren(this._user);
 
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final GoogleSignIn _googleSignIn = GoogleSignIn(); // get instance of google sign in
 
 
   @override
@@ -237,22 +229,10 @@ class DrawerChildren extends StatelessWidget {
         ),
         ListTile(
           onTap: () {
-            print("auth log out ");
-
 
             Navigator.pop(context);
-
-//            if(!pr.isShowing())
-//              pr.show();
-//            Future.delayed(Duration(seconds: 3)).whenComplete((){
-//              if(pr.isShowing())
-//                pr.hide();
-//            });
             logUserOut();
 
-//            Auth().logUserOut(FirebaseAuth.instance).then((val) {
-//              authBloc.authSink.add(false);
-//            });
           },
           leading: Icon(Icons.exit_to_app),
           title: Text("Log out"),
@@ -261,9 +241,8 @@ class DrawerChildren extends StatelessWidget {
     );
   }
 
+  // log user out completely
   logUserOut() {
-//    await _googleSignIn.disconnect();
-//    await _googleSignIn.signOut();
     FirebaseAuth.instance.signOut().then((val) {
       _googleSignIn.disconnect();
       _googleSignIn.signOut();
