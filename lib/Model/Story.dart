@@ -7,18 +7,21 @@ class Story{
   Map user;
 
 
-  Story(this.storyTitle, this.storyBody, this.storyId, this.timeStamp,
-      this.likeCount, this.commentCount, this.user);
+  Story({this.storyTitle, this.storyBody, this.storyId, this.timeStamp,
+      this.likeCount, this.commentCount, this.user});
 
-   Story.fromMap(Map story){
+   factory Story.fromMap(Map story){
 
-    storyTitle = "Not Available";
-    storyBody = story["post_body"];
-    storyId = story["post_id"];
-    timeStamp = story["time_stamp"];
-    user = story["user"];
-    likeCount = story["like_count"];
-    commentCount = story["commentCount"];
+     return Story(
+         storyTitle: story["Not Available"];
+         storyBody: story["post_body"];
+    storyId:story["post_id"];
+    timeStamp : story["time_stamp"];
+    user: story["user"];
+    likeCount: story["like_count"];
+    commentCount :story["commentCount"];
+
+     );
 
 //    heb 9:14
 //     heb 10:2
