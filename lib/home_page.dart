@@ -8,6 +8,7 @@ import 'package:ikode/pages/notification_page.dart';
 import 'package:ikode/pages/thread_post.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:progress_dialog/progress_dialog.dart';
+import 'package:ikode/Bloc/home_page_bloc.dart';
 
 class HomePage extends StatefulWidget {
 
@@ -34,8 +35,24 @@ class _HomePageState extends State<HomePage> {
           child: DrawerChildren(_user),
         ),
         appBar: renderAppBar(),
-        body: renderBody(),
-        bottomNavigationBar: renderBottomNavBar());
+        body: StreamBuilder(
+            initialData: 0,
+            stream: homePageBloc.stream,
+            builder: (context,snapshot){
+              print(snapshot.data);
+
+              return renderBody(snapshot.data);
+
+        }),
+        bottomNavigationBar: StreamBuilder(
+          initialData: 0,
+            stream: homePageBloc.stream,
+            builder: (context,snapshot){
+              _currentTabPosition = snapshot.data;
+          return renderBottomNavBar(snapshot.data);
+        })
+
+    );
   }
 
   @override
@@ -44,20 +61,22 @@ class _HomePageState extends State<HomePage> {
     getUser();
   }
 
+  @override
+  void dispose(){
+    homePageBloc.dispose();
+    super.dispose();
+  }
+
   getUser() {
     _user = widget.user;
   }
 
-  Widget renderBody() {
+  Widget renderBody(int pos) {
 
     // here we render the widget based on the tab position
-    if (_currentTabPosition == 0) {
+    if (pos == 0) {
       return ThreadPage(
         user: _user,
-      );
-    } else if (_currentTabPosition == 1) {
-      return Container(
-        child: Text("Messages"),
       );
     } else {
       return DirectMessaging();
@@ -127,30 +146,26 @@ class _HomePageState extends State<HomePage> {
 
 
   // renders the bottom tabs to the screen
-  BottomNavigationBar renderBottomNavBar() {
+  BottomNavigationBar renderBottomNavBar(int pos) {
 
     return BottomNavigationBar(
-      currentIndex: _currentTabPosition,
+      currentIndex: pos,
       onTap: (pos) {
-        switch (pos) {
-          case 0:
-            _title = "Stories";
-            break;
-          case 1:
-            _title = "Chatroom";
-            Navigator.push(context,
+
+        //if tab position is same, break out of the function
+        if(_currentTabPosition == pos)return;
+
+        if(pos==1)
+          //open chat room route
+          Navigator.push(context,
                 MaterialPageRoute(builder: (BuildContext context) {
               return ChatRoom(_user);
             }));
-            break;
-          case 2:
-            _title = "Messages";
-            break;
-        }
-        setState(() {
-          _currentTabPosition = pos;
-        });
+        else homePageBloc.tabPosition.add(pos); // add value to sink
+
       },
+
+      //item list for bottom navigattion
       items: [
         BottomNavigationBarItem(icon: Icon(Icons.blur_on), title: Text("Stories")),
         BottomNavigationBarItem(
@@ -161,9 +176,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  List<Widget> renderDrawerChildren() {
-    return <Widget>[];
-  }
+
 }
 
 ProgressDialog pr;
