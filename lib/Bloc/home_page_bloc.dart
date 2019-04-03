@@ -1,23 +1,19 @@
 import 'dart:async';
 
+class HomePageBloc {
+
+  //stream controller
+  StreamController<int> controller = StreamController<int>.broadcast();
 
 
+  //sink to accept tab position
+  Sink<int> get tabPosition => controller.sink;
 
-class HomePageBloc{
+  //stream
+  Stream<int> get stream => controller.stream;
 
-
-  StreamController<int> controller = StreamController();
-
-
-  Sink<int> get tabPosition=> controller.sink;
-  Stream<int> get stream=> controller.stream;
-
-
-
-  dispose()=>controller.close();
-
+  //dispose controller
+  dispose() => controller.close();
 }
-
-
 
 HomePageBloc homePageBloc = HomePageBloc();
