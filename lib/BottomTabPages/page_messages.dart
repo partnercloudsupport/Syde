@@ -9,15 +9,11 @@ class _DirectMessagingState extends State<DirectMessaging> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
-//      floatingActionButton: FloatingActionButton(
-//        heroTag: "dm",
-//
-//        onPressed: (){}
-//      ,
-//        child: Icon(Icons.filter_9_plus),
-//      ),
-
+      
+      body: Center(
+        
+        child: Text("No Direct Messaging Started yet"),
+      ),
 
     );
   }
