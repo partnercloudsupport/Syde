@@ -33,9 +33,11 @@ class _ThreadPageState extends State<ThreadPage> {
             case ConnectionState.waiting:
               return Center(
                   child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.blue)));
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.blue))
+
+              );
             default:
-              //else return a listView : builds children lazily
+              //returns a listView : builds children lazily
               return ListView.builder(
                 itemCount: document.data.documents.length,
                 itemBuilder: (context, index) {
@@ -209,22 +211,44 @@ class _ThreadPageState extends State<ThreadPage> {
                                   )),
                               InkWell(
                                   onTap: () {
-                                    print("tapped!");
+
+                                    Story storyDetails = Story.fromMap(
+                                        document.data.documents[index].data);
+                                    Navigator.push(context, MaterialPageRoute(
+                                        builder: (BuildContext context) {
+                                          return DetailedScreen(
+                                            story: storyDetails,
+                                          );
+                                        }));
+
                                   },
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(right: 20.0),
-                                    child: Row(
-                                      children: <Widget>[
-                                        Icon(Icons.chat_bubble_outline,
-                                            color: Colors.grey, size: 18.0),
-                                        Text(
-                                          "10k",
-                                          style: TextStyle(
-                                              color: Colors.grey,
-                                              fontSize: 10.0),
+                                  child: StreamBuilder(
+
+                                    stream: Firestore.instance
+                                        .collection("all_post")
+                                        .document(document
+                                        .data.documents[index]
+                                    ["post_id"]).snapshots(),
+                                    builder: (BuildContext context, AsyncSnapshot snapshot){
+
+
+                                      return Padding(
+                                        padding: const EdgeInsets.only(right: 20.0),
+                                        child: Row(
+                                          children: <Widget>[
+                                            Icon(Icons.chat_bubble_outline,
+                                                color: Colors.grey, size: 18.0),
+                                            Text(
+                                              snapshot.data==null?"0":snapshot.data["comment_count"].toString(),
+                                              style: TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 10.0),
+                                            ),
+                                          ],
                                         ),
-                                      ],
-                                    ),
+                                      );
+                                    },
+
                                   )),
                             ],
                           ),
