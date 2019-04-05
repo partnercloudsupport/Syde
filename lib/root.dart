@@ -8,7 +8,12 @@ class Root extends StatefulWidget {
   _RootState createState() => _RootState();
 }
 
+
+
 class _RootState extends State<Root> {
+
+
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<FirebaseUser>(

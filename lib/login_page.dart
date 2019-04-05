@@ -3,11 +3,23 @@ import 'package:ikode/Auth/auth_bloc.dart';
 import 'package:ikode/syde_color.dart';
 
 class LogInPage extends StatefulWidget {
+
+
   @override
   _LogInPageState createState() => _LogInPageState();
 }
 
 class _LogInPageState extends State<LogInPage> {
+
+  AssetImage _image;
+  @override
+  void initState() {
+
+
+//    precacheImage( AssetImage('assets/photo.png'), context);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(body: LayoutBuilder(builder: (context, constraints) {
@@ -20,11 +32,15 @@ class _LogInPageState extends State<LogInPage> {
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/photo.png'),
+
+                image:
+                AssetImage('assets/photo.png'),
                 fit: BoxFit.fitHeight,
               ),
             ),
           ),
+
+//        FadeInImage(placeholder:  AssetImage('assets/photo.png'), image:  AssetImage('assets/photo.png')),
 
 
           Positioned(
@@ -143,16 +159,4 @@ class _LogInPageState extends State<LogInPage> {
     }));
   }
 
-  Widget renderFirstChild() {
-
-  }
-
-  Widget renderSecondChild() {
-
-  }
-
-  Widget renderThirdChild() {
-
-
-  }
 }
