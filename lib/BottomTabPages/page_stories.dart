@@ -16,8 +16,6 @@ class ThreadPage extends StatefulWidget {
 }
 
 class _ThreadPageState extends State<ThreadPage> {
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,7 +35,6 @@ class _ThreadPageState extends State<ThreadPage> {
           switch (document.connectionState) {
             //show progress dialog while state is waiting
             case ConnectionState.waiting:
-
               return PKCardListSkeleton(
                 isCircularImage: true,
                 isBottomLinesActive: true,
@@ -54,8 +51,9 @@ class _ThreadPageState extends State<ThreadPage> {
                 itemCount: document.data.documents.length,
                 itemBuilder: (context, index) {
 //
-                  DateTime date =  DateTime.fromMillisecondsSinceEpoch(int.parse(document.data.documents[index]["time_stamp"]));
-                  var format =  DateFormat("yMMMMd");
+                  DateTime date = DateTime.fromMillisecondsSinceEpoch(
+                      int.parse(document.data.documents[index]["time_stamp"]));
+                  var format = DateFormat("yMMMMd");
                   var dateString = format.format(date);
                   // return each item at current position
                   return Padding(
@@ -67,6 +65,7 @@ class _ThreadPageState extends State<ThreadPage> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: <Widget>[
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
                               CircleAvatar(
                                 radius: 15.0,
@@ -79,23 +78,39 @@ class _ThreadPageState extends State<ThreadPage> {
                               SizedBox(
                                 width: 10.0,
                               ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    document.data.documents[index].data["user"]
-                                        ["user_name"],
-                                    style: TextStyle(
-                                        color: Colors.black87,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 12.0),
+                              Flexible(
+                                child: Container(
+                                  width: double.infinity,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text(
+                                        document.data.documents[index]
+                                            .data["user"]["user_name"],
+                                        style: TextStyle(
+                                            color: Colors.black87,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 12.0),
+                                      ),
+                                      Text(
+                                        dateString,
+                                        style: TextStyle(
+                                            fontSize: 10.0,
+                                            color: Colors.black54),
+                                      ),
+                                    ],
                                   ),
-                                  Text(dateString,
-                                    style: TextStyle(
-                                        fontSize: 10.0, color: Colors.black54),
+                                ),
+                              ),
+                              IconButton(
+                                  icon: Icon(
+                                    Icons.more_horiz,
+                                    color: Colors.grey,
                                   ),
-                                ],
-                              )
+                                  onPressed: () {
+                                    _showBottomSheet(context);
+                                  })
                             ],
                           ),
                           SizedBox(
@@ -207,7 +222,6 @@ class _ThreadPageState extends State<ThreadPage> {
                                                   color: Colors.grey,
                                                   size: 18.0,
                                                 );
-
                                             }),
                                         Text(
                                           "${document.data.documents[index]["like_count"]}",
@@ -220,35 +234,36 @@ class _ThreadPageState extends State<ThreadPage> {
                                   )),
                               InkWell(
                                   onTap: () {
-
                                     Story storyDetails = Story.fromMap(
                                         document.data.documents[index].data);
                                     Navigator.push(context, MaterialPageRoute(
                                         builder: (BuildContext context) {
-                                          return DetailedScreen(
-                                            story: storyDetails,
-                                          );
-                                        }));
-
+                                      return DetailedScreen(
+                                        story: storyDetails,
+                                      );
+                                    }));
                                   },
                                   child: StreamBuilder(
-
                                     stream: Firestore.instance
                                         .collection("all_post")
-                                        .document(document
-                                        .data.documents[index]
-                                    ["post_id"]).snapshots(),
-                                    builder: (BuildContext context, AsyncSnapshot snapshot){
-
-
+                                        .document(document.data.documents[index]
+                                            ["post_id"])
+                                        .snapshots(),
+                                    builder: (BuildContext context,
+                                        AsyncSnapshot snapshot) {
                                       return Padding(
-                                        padding: const EdgeInsets.only(right: 20.0),
+                                        padding:
+                                            const EdgeInsets.only(right: 20.0),
                                         child: Row(
                                           children: <Widget>[
                                             Icon(Icons.chat_bubble_outline,
                                                 color: Colors.grey, size: 18.0),
                                             Text(
-                                              snapshot.data==null?"0":snapshot.data["comment_count"].toString(),
+                                              snapshot.data == null
+                                                  ? "0"
+                                                  : snapshot
+                                                      .data["comment_count"]
+                                                      .toString(),
                                               style: TextStyle(
                                                   color: Colors.grey,
                                                   fontSize: 10.0),
@@ -257,7 +272,6 @@ class _ThreadPageState extends State<ThreadPage> {
                                         ),
                                       );
                                     },
-
                                   )),
                             ],
                           ),
@@ -275,12 +289,10 @@ class _ThreadPageState extends State<ThreadPage> {
                     )),
                   );
                 },
-
               );
           }
         },
       ),
-
     );
   }
 
@@ -322,5 +334,36 @@ class _ThreadPageState extends State<ThreadPage> {
             {"like_count": document.data.documents[index]["like_count"] - 1});
       }
     });
+  }
+
+  void _showBottomSheet(context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return Wrap(
+            children: <Widget>[
+              makeBottomSheetChildren(
+                  title: "Save story", icon: Icons.bookmark_border, pos: 0),
+              makeBottomSheetChildren(
+                  title: "share story", icon: Icons.share, pos: 1),
+              makeBottomSheetChildren(
+                  title: "Copy link", icon: Icons.link, pos: 3)
+            ],
+          );
+        });
+  }
+
+  Widget makeBottomSheetChildren({title, icon, pos}) {
+    return ListTile(
+      onTap: () {
+        print(title);
+        switch (pos) {
+        }
+
+        Navigator.pop(context);
+      },
+      title: Text(title),
+      leading: Icon(icon),
+    );
   }
 }
