@@ -170,7 +170,7 @@ class _ThreadPostState extends State<ThreadPost> {
                         style: TextStyle(
                             color: Colors.blue,
                             fontSize: 18.0,
-                            fontWeight: FontWeight.bold),
+                            fontWeight: FontWeight.w400),
                       ),
                     ),
                     width: MediaQuery.of(context).size.width,
