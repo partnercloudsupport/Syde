@@ -47,6 +47,7 @@ class _HomePageState extends State<HomePage> {
           initialData: 0,
             stream: homePageBloc.stream,
             builder: (context,snapshot){
+
               _currentTabPosition = snapshot.data;
           return renderBottomNavBar(snapshot.data);
         })
@@ -106,7 +107,7 @@ class _HomePageState extends State<HomePage> {
           },
           child: Padding(
             padding: const EdgeInsets.all(5.0),
-            child: Icon(Icons.add),
+            child: Icon(Icons.add_circle_outline,color: Colors.blue,),
           ),
         ),
 
@@ -121,7 +122,7 @@ class _HomePageState extends State<HomePage> {
           },
           child: Padding(
             padding: const EdgeInsets.all(5.0),
-            child: Icon(Icons.notifications_none),
+            child: Icon(Icons.notifications_none,color:Colors.blue),
           ),
         )
 
@@ -141,7 +142,7 @@ class _HomePageState extends State<HomePage> {
               onPressed: () {
                 _scaffoldKey.currentState.openDrawer();
               })),
-      title: Text(_title),
+      title: Text(_title,style: TextStyle(fontWeight: FontWeight.bold),),
     );
   }
 

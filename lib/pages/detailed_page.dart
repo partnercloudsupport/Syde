@@ -5,7 +5,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:pk_skeleton/pk_skeleton.dart';
-import ''
 
 class DetailedScreen extends StatefulWidget {
   final Story story;

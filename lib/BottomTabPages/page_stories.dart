@@ -4,6 +4,7 @@ import 'package:ikode/pages/detailed_page.dart';
 import 'package:ikode/pages/thread_post.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 import 'package:pk_skeleton/pk_skeleton.dart';
 
 class ThreadPage extends StatefulWidget {
@@ -15,6 +16,8 @@ class ThreadPage extends StatefulWidget {
 }
 
 class _ThreadPageState extends State<ThreadPage> {
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,6 +54,9 @@ class _ThreadPageState extends State<ThreadPage> {
                 itemCount: document.data.documents.length,
                 itemBuilder: (context, index) {
 //
+                  DateTime date =  DateTime.fromMillisecondsSinceEpoch(int.parse(document.data.documents[index]["time_stamp"]));
+                  var format =  DateFormat("yMMMMd");
+                  var dateString = format.format(date);
                   // return each item at current position
                   return Padding(
                     padding: const EdgeInsets.only(left: 10.0, right: 10.0),
@@ -84,13 +90,7 @@ class _ThreadPageState extends State<ThreadPage> {
                                         fontWeight: FontWeight.bold,
                                         fontSize: 12.0),
                                   ),
-                                  Text(
-                                    new DateTime.fromMillisecondsSinceEpoch(
-                                            int.parse(
-                                                document.data.documents[index]
-                                                    ["time_stamp"]))
-                                        .toLocal()
-                                        .toString(),
+                                  Text(dateString,
                                     style: TextStyle(
                                         fontSize: 10.0, color: Colors.black54),
                                   ),
