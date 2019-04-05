@@ -26,6 +26,7 @@ dependencies:
   test:
   flutter_launcher_icons: ^0.7.0
   intl: ^0.15.8
+  pk_skeleton:
 
 
 
