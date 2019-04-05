@@ -4,6 +4,7 @@ import 'package:ikode/pages/detailed_page.dart';
 import 'package:ikode/pages/thread_post.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:pk_skeleton/pk_skeleton.dart';
 
 class ThreadPage extends StatefulWidget {
   @override
@@ -25,17 +26,25 @@ class _ThreadPageState extends State<ThreadPage> {
             .snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> document) {
           //return error message if there is an error
+
+          print(document.connectionState);
           if (document.hasError)
             return Center(child: Text('Error: ${document.error}'));
 
           switch (document.connectionState) {
             //show progress dialog while state is waiting
             case ConnectionState.waiting:
-              return Center(
-                  child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.blue))
 
+              return PKCardListSkeleton(
+                isCircularImage: true,
+                isBottomLinesActive: true,
+                length: 10,
               );
+//              return Center(
+//                  child: CircularProgressIndicator(
+//                      valueColor: AlwaysStoppedAnimation<Color>(Colors.blue))
+//
+//              );
             default:
               //returns a listView : builds children lazily
               return ListView.builder(

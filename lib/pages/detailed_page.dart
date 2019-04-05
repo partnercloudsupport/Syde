@@ -4,6 +4,8 @@ import 'package:ikode/Model/Story.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+import 'package:pk_skeleton/pk_skeleton.dart';
+import ''
 
 class DetailedScreen extends StatefulWidget {
   final Story story;
@@ -130,13 +132,24 @@ class _DetailedScreenState extends State<DetailedScreen> {
               stream: _commentRef.orderBy("time_stamp", descending: true).snapshots(),
               builder: (context,AsyncSnapshot<QuerySnapshot> snapshot){
 
-                if(snapshot.connectionState == ConnectionState.waiting)return Center(
+                if(snapshot.connectionState == ConnectionState.waiting)
+//                  return PKCardListSkeleton(
+//                    isCircularImage: true,
+//                    isBottomLinesActive: true,
+//                    length: 10,
+//                  );
+
+                  return Center(
                   child: Container(
                     width: 50.0,
                     height: 50.0,
+
+
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
                         valueColor: AlwaysStoppedAnimation<Color>(Colors.black)),
+
+
                   ),
                 );
 
@@ -249,11 +262,11 @@ class _DetailedScreenState extends State<DetailedScreen> {
       stream: Firestore.instance.collection("users").document(comment.userId).snapshots(),
         builder: (context,userSnapshot) {
           if (userSnapshot.connectionState == ConnectionState.waiting)
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                child: Center(child: Text("loading comments..."),),),
-            );
+            return Container(
+              child: Center(child: PKCardSkeleton(
+                isCircularImage: true,
+                isBottomLinesActive: true,
+              ),),);
 
           print("shot ${userSnapshot.data["name"]}");
 
