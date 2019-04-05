@@ -3,6 +3,7 @@ import 'package:ikode/Model/Comment.dart';
 import 'package:ikode/Model/Story.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 
 class DetailedScreen extends StatefulWidget {
   final Story story;
@@ -49,11 +50,11 @@ class _DetailedScreenState extends State<DetailedScreen> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
-        backgroundColor: Color(45),
+        backgroundColor: Colors.blue,
         leading: IconButton(
             icon: Icon(
-              Icons.navigate_before,
-              color: Colors.grey,
+              Icons.arrow_back,
+              color: Colors.white,
             ),
             onPressed: () {
               Navigator.pop(context);
@@ -81,9 +82,14 @@ class _DetailedScreenState extends State<DetailedScreen> {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
             ),
           ),
+
+          Padding(
+            padding: const EdgeInsets.only(left:8.0,right: 8.0,bottom: 4.0,top: 8.0),
+            child: Divider(height: 1.0,color: Colors.black,),
+          ),
           Padding(
               padding:
-                  const EdgeInsets.only(left: 16.0, top: 16.0, bottom: 18.0),
+                  const EdgeInsets.only(left: 16.0, top: 8.0, bottom: 8.0,right: 16.0),
               child: Row(
 //
                   children: <Widget>[
@@ -183,7 +189,7 @@ class _DetailedScreenState extends State<DetailedScreen> {
                     padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                     child: TextField(
                       controller: _controller,
-                      maxLines: 2,
+                      maxLines: 1,
                       keyboardType: TextInputType.multiline,
                       textCapitalization: TextCapitalization.sentences,
                       textInputAction: TextInputAction.send,
@@ -226,7 +232,7 @@ class _DetailedScreenState extends State<DetailedScreen> {
 
                       });
                     },
-                    child: Text("Send"))
+                    child: Icon(Icons.send,color: Colors.blue,))
               ],
             ),
           ),
@@ -257,7 +263,9 @@ class _DetailedScreenState extends State<DetailedScreen> {
         });
   }
     Widget makeItem(Comment comment, AsyncSnapshot userSnapshot){
-
+      DateTime date =  DateTime.fromMillisecondsSinceEpoch(int.parse(comment.timeStamp));
+      var format =  DateFormat("yMMMMd");
+      var dateString = format.format(date);
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
       child: Row(
@@ -270,14 +278,6 @@ class _DetailedScreenState extends State<DetailedScreen> {
             NetworkImage(userSnapshot.data["photoUrl"] + "?height=500"),
           ),
 
-//          Container(
-//            width: 35.0,
-//            height: 35.0,
-//            decoration: BoxDecoration(
-//              shape: BoxShape.circle,
-//              image: DecorationImage(image: NetworkImage(userSnapshot.data["photoUrl"] + "?height=500"))
-//            ),
-//          ),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.only(top:10.0,left: 10.0),
@@ -292,9 +292,7 @@ class _DetailedScreenState extends State<DetailedScreen> {
                         style: TextStyle(
                             color: Colors.blue, fontWeight: FontWeight.w500),
                       ),
-                      Text(
-                          DateTime.fromMillisecondsSinceEpoch(int.parse(comment.timeStamp)).toLocal().toString()
-                          ,
+                      Text(dateString                          ,
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w300,

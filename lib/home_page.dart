@@ -1,14 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:ikode/Bloc/home_page_bloc.dart';
 import 'package:ikode/BottomTabPages/page_chatroom.dart';
-import 'package:ikode/BottomTabPages/page_stories.dart';
 import 'package:ikode/BottomTabPages/page_messages.dart';
+import 'package:ikode/BottomTabPages/page_stories.dart';
 import 'package:ikode/pages/notification_page.dart';
 import 'package:ikode/pages/thread_post.dart';
-import 'package:progress_indicators/progress_indicators.dart';
 import 'package:progress_dialog/progress_dialog.dart';
-import 'package:ikode/Bloc/home_page_bloc.dart';
 
 class HomePage extends StatefulWidget {
 
