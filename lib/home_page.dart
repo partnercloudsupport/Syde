@@ -6,6 +6,7 @@ import 'package:ikode/BottomTabPages/page_chatroom.dart';
 import 'package:ikode/BottomTabPages/page_messages.dart';
 import 'package:ikode/BottomTabPages/page_stories.dart';
 import 'package:ikode/pages/notification_page.dart';
+import 'package:ikode/pages/search_users_page.dart';
 import 'package:ikode/pages/thread_post.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 
@@ -65,6 +66,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose(){
+    print("dispose called");
     homePageBloc.dispose();
     super.dispose();
   }
@@ -101,7 +103,7 @@ class _HomePageState extends State<HomePage> {
             } else {
               Navigator.push(context,
                   MaterialPageRoute(builder: (BuildContext context) {
-                return DirectMessaging();
+                return SearchUsers();
               }));
             }
           },

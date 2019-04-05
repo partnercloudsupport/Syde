@@ -56,6 +56,7 @@ class _DetailedScreenState extends State<DetailedScreen> {
             icon: Icon(
               Icons.arrow_back,
               color: Colors.white,
+
             ),
             onPressed: () {
               Navigator.pop(context);
@@ -86,7 +87,7 @@ class _DetailedScreenState extends State<DetailedScreen> {
 
           Padding(
             padding: const EdgeInsets.only(left:8.0,right: 8.0,bottom: 4.0,top: 8.0),
-            child: Divider(height: 1.0,color: Colors.black,),
+            child: Divider(height: 1.0,color: Colors.grey,),
           ),
           Padding(
               padding:
@@ -123,7 +124,7 @@ class _DetailedScreenState extends State<DetailedScreen> {
             padding: const EdgeInsets.all(16.0),
             child: Text(widget.story.storyBody,
                 style:
-                    TextStyle(fontSize: 14.0, color: Colors.grey, height: 2.0)),
+                    TextStyle(fontSize: 14.0, color: Colors.black, height: 2.0)),
           ),
           Padding(
             padding: const EdgeInsets.only(left: 16.0,right: 16.0),
@@ -296,20 +297,23 @@ class _DetailedScreenState extends State<DetailedScreen> {
               child: Column(
                 children: <Widget>[
 //                SizedBox(height: 40.0,),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        userSnapshot.data["name"],
-                        style: TextStyle(
-                            color: Colors.blue, fontWeight: FontWeight.w500),
-                      ),
-                      Text(dateString                          ,
+                  Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          userSnapshot.data["name"],
                           style: TextStyle(
-                              color: Colors.grey,
-                              fontWeight: FontWeight.w300,
-                              fontSize: 12.0))
-                    ],
+                              color: Colors.black, fontWeight: FontWeight.w500),
+                        ),
+                        Text(dateString                          ,
+                            style: TextStyle(
+                                color: Colors.grey,
+                                fontWeight: FontWeight.w300,
+                                fontSize: 12.0))
+                      ],
+                    ),
                   ),
                   SizedBox(height:10.0),
                   Align(
@@ -318,7 +322,7 @@ class _DetailedScreenState extends State<DetailedScreen> {
 
                       comment.commentBody,
                         style: TextStyle(
-                            color: Colors.grey,
+                            color: Colors.black,
                             fontWeight: FontWeight.normal,
                             fontSize: 12.0)),
                   ),
