@@ -1,6 +1,6 @@
-# ikode
+# Syde
 
-A new Flutter application.
+Syde is a mobile application built with flutter that will serve as an online tech community for developers and tech enthusiast.
 
 ## Getting Started
 
