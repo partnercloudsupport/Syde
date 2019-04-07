@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:ikode/Model/Story.dart';
 import 'package:ikode/pages/detailed_page.dart';
@@ -109,7 +111,9 @@ class _ThreadPageState extends State<ThreadPage> {
                                     color: Colors.grey,
                                   ),
                                   onPressed: () {
-                                    _showBottomSheet(context);
+                                    print(document.data.documents[index].data);
+                                    _showBottomSheet(context,
+                                        document.data.documents[index]["post_id"]);
                                   })
                             ],
                           ),
@@ -336,34 +340,41 @@ class _ThreadPageState extends State<ThreadPage> {
     });
   }
 
-  void _showBottomSheet(context) {
+  void _showBottomSheet(context, String id) {
     showModalBottomSheet(
         context: context,
         builder: (BuildContext context) {
           return Wrap(
             children: <Widget>[
-              makeBottomSheetChildren(
-                  title: "Save story", icon: Icons.bookmark_border, pos: 0),
-              makeBottomSheetChildren(
-                  title: "share story", icon: Icons.share, pos: 1),
-              makeBottomSheetChildren(
-                  title: "Copy link", icon: Icons.link, pos: 3)
+              ListTile(
+                onTap: () {
+                  saveStory(id);
+
+                  Navigator.pop(context);
+                },
+                title: Text("Save story"),
+                leading: Icon(Icons.bookmark_border),
+              ),
+              ListTile(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                title: Text("Share story"),
+                leading: Icon(Icons.share),
+              ),
             ],
           );
         });
   }
 
-  Widget makeBottomSheetChildren({title, icon, pos}) {
-    return ListTile(
-      onTap: () {
-        print(title);
-        switch (pos) {
-        }
-
-        Navigator.pop(context);
-      },
-      title: Text(title),
-      leading: Icon(icon),
-    );
+  saveStory(String storyId) {
+    Firestore.instance
+        .collection("saved_story")
+        .document(widget.user.uid)
+        .collection("bookmark").document(storyId)
+        .setData({"story_id":storyId})
+        .then((ref) {
+          print("done");
+    });
   }
 }
