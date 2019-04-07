@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ikode/Model/User.dart';
+import 'package:ikode/pages/direct_messaging.dart';
 import 'package:pk_skeleton/pk_skeleton.dart';
 
 class SearchUsers extends StatefulWidget {
@@ -38,7 +40,17 @@ class _SearchUsersState extends State<SearchUsers> {
 //                    return Text("Hey ${snapshot.data.documents[index]["name"]}");
 
                     return ListTile(
-                      onTap: () {},
+                      onTap: () {
+                        User user = User(
+                            id: snapshot.data.documents[index]["id"],
+                            emial: snapshot.data.documents[index]["email"],
+                            photo: snapshot.data.documents[index]["photoUrl"],
+                            name: snapshot.data.documents[index]["name"]);
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (BuildContext context) {
+                          return DirectMessaging(user);
+                        }));
+                      },
                       leading: CircleAvatar(
                         backgroundImage: NetworkImage(
                             snapshot.data.documents[index]["photoUrl"] +

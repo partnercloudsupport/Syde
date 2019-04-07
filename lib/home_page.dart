@@ -67,7 +67,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose(){
     print("dispose called");
-    homePageBloc.dispose();
+//    homePageBloc.dispose();
     super.dispose();
   }
 
@@ -83,7 +83,7 @@ class _HomePageState extends State<HomePage> {
         user: _user,
       );
     } else {
-      return DirectMessaging();
+      return DirectMessaging(_user);
     }
   }
 

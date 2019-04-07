@@ -221,29 +221,8 @@ class _DetailedScreenState extends State<DetailedScreen> {
                       print(_controller.text.length);
                       if(_controller.text.trim().length<1)return;
 
+                      addComment();
 
-                      Map<String, dynamic> data = Comment(
-                              commentBody: _controller.value.text,
-                              commentId: "na",
-                              userId: _user.uid,
-                              timeStamp: DateTime.now()
-                                  .millisecondsSinceEpoch
-                                  .toString())
-                          .toMap();
-
-                      _controller.clear();
-                      _commentRef.add(data).then((docRef) {
-
-
-                        _commentRef
-                            .document(docRef.documentID)
-                            .updateData({"comment_id": docRef.documentID});
-
-                        incrementComment(widget.story.storyId);
-
-
-
-                      });
                     },
                     child: Icon(Icons.send,color: Colors.blue,))
               ],
@@ -337,6 +316,36 @@ class _DetailedScreenState extends State<DetailedScreen> {
     );
   }
 
+
+
+  addComment(){
+
+    Map<String, dynamic> data = Comment(
+        commentBody: _controller.value.text,
+        commentId: "na",
+        userId: _user.uid,
+        timeStamp: DateTime.now()
+            .millisecondsSinceEpoch
+            .toString())
+        .toMap();
+
+    _controller.clear();
+    _commentRef.add(data).then((docRef) {
+
+
+      _commentRef
+          .document(docRef.documentID)
+          .updateData({"comment_id": docRef.documentID});
+
+      incrementComment(widget.story.storyId);
+
+
+
+    }
+
+    );
+
+  }
 
   incrementComment(String docRef) async {
     //use transaction on the fire store instance to prevent race condition
