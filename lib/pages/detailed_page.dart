@@ -96,6 +96,7 @@ class _DetailedScreenState extends State<DetailedScreen> {
 //
                   children: <Widget>[
                     CircleAvatar(
+
                       radius: 20.0,
                       backgroundImage: NetworkImage(
                           widget.story.user["user_photo"] + "?height=500"),
