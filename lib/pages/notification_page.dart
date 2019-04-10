@@ -7,13 +7,34 @@ class NotificationScreen extends StatefulWidget {
 }
 
 class _NotificationScreenState extends State<NotificationScreen> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: StreamBuilder<QuerySnapshot>(
-            stream: Firestore.instance.collection("announcement").snapshots(),
+        appBar: AppBar(
+          elevation: 0.0,
+          backgroundColor: Colors.blue,
+          title: Text("Notofication"),
+          leading: IconButton(
+              icon: Icon(
+                Icons.arrow_back,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              }),
+        ),
+        body: FutureBuilder(
+            future:
+            Firestore.instance.collection("announcement").getDocuments(),
             builder: (context, snapshot) {
-              print(snapshot.data.documents[0]["title"]);
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.black)),
+                );
+              }
 
               return ListView.builder(
                   itemCount: snapshot.data.documents.length,
