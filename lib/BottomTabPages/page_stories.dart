@@ -372,7 +372,7 @@ class _ThreadPageState extends State<ThreadPage> {
         .collection("saved_story")
         .document(widget.user.uid)
         .collection("bookmark").document(storyId)
-        .setData({"story_id":storyId})
+        .setData({"story_id":storyId,"time_stamp":DateTime.now().millisecondsSinceEpoch.toString()})
         .then((ref) {
           print("done");
     });
