@@ -34,25 +34,6 @@ class _SavedStoryScreenState extends State<SavedStoryScreen> {
             }),
       ),
       body: getId(),
-
-//        body: StreamBuilder<QuerySnapshot>(
-//            stream: Firestore.instance.collection("saved_story")
-//                .document(widget.uid)
-//                .collection("bookmark").snapshots(),
-//            builder: (context, snapshot) {
-//              if (snapshot.connectionState == ConnectionState.waiting) {
-//                return PKCardListSkeleton();
-//              }
-//
-////              Future.delayed(Duration(seconds: 3));
-//
-//              return ListView.builder(
-//                  itemCount: snapshot.data.documents.length,
-//                  itemBuilder: (context, index) {
-//                    return makeNotificationItem(
-//                        snapshot.data.documents[index].data["story_id"]);
-//                  });
-//            })
     );
   }
 
@@ -186,63 +167,6 @@ class _SavedStoryScreenState extends State<SavedStoryScreen> {
                                   ),
                                 ],
                               ),
-//                              InkWell(
-//                                  onTap: () {
-////                                    Story storyDetails = Story(
-////                                        commentCount: snapshot
-////                                            .data["comment_count"],
-////                                        likeCount: snapshot.data["like_count"],
-////                                        storyBody: snapshot.data["story_body"],
-////                                        storyId: snapshot.data["story_id"],
-////                                        storyTitle: snapshot
-////                                            .data["story_title"],
-////                                        timeStamp: snapshot.data["time_stamp"],
-////                                        user: snapshot.data["time_stamp"]
-////
-////                                    );
-////                                    Navigator.push(
-////                                        context, MaterialPageRoute(
-////                                        builder: (BuildContext context) {
-////                                          return DetailedScreen(
-////                                            story: storyDetails,
-////                                          );
-////                                        }));
-//                                  },
-//                                  child: StreamBuilder(
-//                                    stream: Firestore.instance
-//                                        .collection("all_post")
-//                                        .document(
-//                                        snapshot.data
-//                                        ["post_id"])
-//                                        .snapshots(),
-//                                    builder: (BuildContext context,
-//                                        AsyncSnapshot snapshot) {
-//                                      return Padding(
-//                                        padding: const EdgeInsets.only(
-//                                            right: 20.0),
-//                                        child: Row(
-//                                          children: <Widget>[
-//                                            Icon(Icons.chat_bubble_outline,
-//                                                color: Colors.grey,
-//                                                size: 18.0),
-//                                            Text(
-//                                              snapshot.data == null
-//                                                  ? "0"
-//                                                  : snapshot
-//                                                  .data["comment_count"]
-//                                                  .toString(),
-//                                              style: TextStyle(
-//                                                  color: Colors.grey,
-//                                                  fontSize: 10.0),
-//                                            ),
-//                                          ],
-//                                        ),
-//                                      );
-//                                    },
-//                                  )
-//
-//                              ),
-
                               SizedBox(
                                 height: 10.0,
                               ),
