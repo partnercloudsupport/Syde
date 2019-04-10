@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -5,6 +7,7 @@ import 'package:ikode/Bloc/home_page_bloc.dart';
 import 'package:ikode/BottomTabPages/page_chatroom.dart';
 import 'package:ikode/BottomTabPages/page_messages.dart';
 import 'package:ikode/BottomTabPages/page_stories.dart';
+import 'package:ikode/pages/bookmark_page.dart';
 import 'package:ikode/pages/notification_page.dart';
 import 'package:ikode/pages/search_users_page.dart';
 import 'package:ikode/pages/thread_post.dart';
@@ -13,6 +16,7 @@ import 'package:progress_dialog/progress_dialog.dart';
 class HomePage extends StatefulWidget {
 
   final FirebaseUser user;
+
   const HomePage({this.user});
 
   @override
@@ -42,16 +46,14 @@ class _HomePageState extends State<HomePage> {
               print(snapshot.data);
 
               return renderBody(snapshot.data);
-
-        }),
+            }),
         bottomNavigationBar: StreamBuilder(
-          initialData: 0,
+            initialData: 0,
             stream: homePageBloc.stream,
             builder: (context,snapshot){
-
               _currentTabPosition = snapshot.data;
-          return renderBottomNavBar(snapshot.data);
-        })
+              return renderBottomNavBar(snapshot.data);
+            })
 
     );
   }
@@ -76,7 +78,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget renderBody(int pos) {
-
     // here we render the widget based on the tab position
     if (pos == 0) {
       return ThreadPage(
@@ -98,13 +99,13 @@ class _HomePageState extends State<HomePage> {
             if (_currentTabPosition == 0) {
               Navigator.push(context,
                   MaterialPageRoute(builder: (BuildContext context) {
-                return ThreadPost();
-              }));
+                    return ThreadPost();
+                  }));
             } else {
               Navigator.push(context,
                   MaterialPageRoute(builder: (BuildContext context) {
-                return SearchUsers();
-              }));
+                    return SearchUsers();
+                  }));
             }
           },
           child: Padding(
@@ -119,8 +120,8 @@ class _HomePageState extends State<HomePage> {
           onTap: () {
             Navigator.push(context,
                 MaterialPageRoute(builder: (BuildContext context) {
-              return NotificationScreen();
-            }));
+                  return NotificationScreen();
+                }));
           },
           child: Padding(
             padding: const EdgeInsets.all(5.0),
@@ -130,7 +131,7 @@ class _HomePageState extends State<HomePage> {
 
       ],
       textTheme:
-          TextTheme(title: TextStyle(color: Colors.black, fontSize: 18.0)),
+      TextTheme(title: TextStyle(color: Colors.black, fontSize: 18.0)),
       backgroundColor: Colors.white,
       leading: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -138,9 +139,9 @@ class _HomePageState extends State<HomePage> {
               child: _user == null
                   ? Icon(Icons.account_circle)
                   : CircleAvatar(
-                      backgroundImage:
-                          NetworkImage(_user.photoUrl + "?height=500"),
-                    ),
+                backgroundImage:
+                NetworkImage(_user.photoUrl + "?height=500"),
+              ),
               onPressed: () {
                 _scaffoldKey.currentState.openDrawer();
               })),
@@ -151,20 +152,18 @@ class _HomePageState extends State<HomePage> {
 
   // renders the bottom tabs to the screen
   BottomNavigationBar renderBottomNavBar(int pos) {
-
     return BottomNavigationBar(
       currentIndex: pos,
       onTap: (pos) {
-
         //if tab position is same, break out of the function
         if(_currentTabPosition == pos)return;
 
         if(pos==1)
           //open chat room route
           Navigator.push(context,
-                MaterialPageRoute(builder: (BuildContext context) {
-              return ChatRoom(_user);
-            }));
+              MaterialPageRoute(builder: (BuildContext context) {
+                return ChatRoom(_user);
+              }));
         else homePageBloc.tabPosition.add(pos); // add value to sink
 
       },
@@ -239,6 +238,15 @@ class DrawerChildren extends StatelessWidget {
         ListTile(
           leading: Icon(Icons.bookmark_border),
           title: Text("Bookmarks"),
+          onTap: () {
+            Navigator.pop(context);
+
+            Future.delayed(Duration(milliseconds: 200));
+            Navigator.push(context,
+                MaterialPageRoute(builder: (BuildContext context) {
+                  return SavedStoryScreen(_user.uid);
+                }));
+          },
         ),
         ListTile(
           leading: Icon(Icons.chat_bubble_outline),
@@ -246,10 +254,8 @@ class DrawerChildren extends StatelessWidget {
         ),
         ListTile(
           onTap: () {
-
             Navigator.pop(context);
             logUserOut();
-
           },
           leading: Icon(Icons.exit_to_app),
           title: Text("Log out"),
