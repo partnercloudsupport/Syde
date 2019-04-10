@@ -14,7 +14,6 @@ import 'package:ikode/pages/thread_post.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 
 class HomePage extends StatefulWidget {
-
   final FirebaseUser user;
 
   const HomePage({this.user});
@@ -24,12 +23,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   FirebaseUser _user; //current user
   int _currentTabPosition = 0; // tab navigation position
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();// key to reference the scaffold widget
+  final GlobalKey<ScaffoldState> _scaffoldKey =
+  new GlobalKey<ScaffoldState>(); // key to reference the scaffold widget
   String _title = "Stories";
-
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +40,7 @@ class _HomePageState extends State<HomePage> {
         body: StreamBuilder(
             initialData: 0,
             stream: homePageBloc.stream,
-            builder: (context,snapshot){
+            builder: (context, snapshot) {
               print(snapshot.data);
 
               return renderBody(snapshot.data);
@@ -50,14 +48,11 @@ class _HomePageState extends State<HomePage> {
         bottomNavigationBar: StreamBuilder(
             initialData: 0,
             stream: homePageBloc.stream,
-            builder: (context,snapshot){
+            builder: (context, snapshot) {
               _currentTabPosition = snapshot.data;
               return renderBottomNavBar(snapshot.data);
-            })
-
-    );
+            }));
   }
-
 
   @override
   void initState() {
@@ -65,9 +60,8 @@ class _HomePageState extends State<HomePage> {
     getUser();
   }
 
-
   @override
-  void dispose(){
+  void dispose() {
     print("dispose called");
 //    homePageBloc.dispose();
     super.dispose();
@@ -110,10 +104,12 @@ class _HomePageState extends State<HomePage> {
           },
           child: Padding(
             padding: const EdgeInsets.all(5.0),
-            child: Icon(Icons.add_circle_outline,color: Colors.blue,),
+            child: Icon(
+              Icons.add_circle_outline,
+              color: Colors.blue,
+            ),
           ),
         ),
-
         InkWell(
           borderRadius: BorderRadius.circular(20),
           radius: 5,
@@ -125,10 +121,9 @@ class _HomePageState extends State<HomePage> {
           },
           child: Padding(
             padding: const EdgeInsets.all(5.0),
-            child: Icon(Icons.notifications_none,color:Colors.blue),
+            child: Icon(Icons.notifications_none, color: Colors.blue),
           ),
         )
-
       ],
       textTheme:
       TextTheme(title: TextStyle(color: Colors.black, fontSize: 18.0)),
@@ -145,10 +140,12 @@ class _HomePageState extends State<HomePage> {
               onPressed: () {
                 _scaffoldKey.currentState.openDrawer();
               })),
-      title: Text(_title,style: TextStyle(fontWeight: FontWeight.bold),),
+      title: Text(
+        _title,
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
     );
   }
-
 
   // renders the bottom tabs to the screen
   BottomNavigationBar renderBottomNavBar(int pos) {
@@ -156,21 +153,22 @@ class _HomePageState extends State<HomePage> {
       currentIndex: pos,
       onTap: (pos) {
         //if tab position is same, break out of the function
-        if(_currentTabPosition == pos)return;
+        if (_currentTabPosition == pos) return;
 
-        if(pos==1)
+        if (pos == 1)
           //open chat room route
           Navigator.push(context,
               MaterialPageRoute(builder: (BuildContext context) {
                 return ChatRoom(_user);
               }));
-        else homePageBloc.tabPosition.add(pos); // add value to sink
-
+        else
+          homePageBloc.tabPosition.add(pos); // add value to sink
       },
 
       //item list for bottom navigattion
       items: [
-        BottomNavigationBarItem(icon: Icon(Icons.blur_on), title: Text("Stories")),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.blur_on), title: Text("Stories")),
         BottomNavigationBarItem(
             icon: Icon(Icons.chat_bubble_outline), title: Text("Chatroom")),
         BottomNavigationBarItem(
@@ -178,8 +176,6 @@ class _HomePageState extends State<HomePage> {
       ],
     );
   }
-
-
 }
 
 ProgressDialog pr;
@@ -191,8 +187,8 @@ class DrawerChildren extends StatelessWidget {
 
   DrawerChildren(this._user);
 
-  final GoogleSignIn _googleSignIn = GoogleSignIn(); // get instance of google sign in
-
+  final GoogleSignIn _googleSignIn =
+  GoogleSignIn(); // get instance of google sign in
 
   @override
   Widget build(BuildContext context) {
