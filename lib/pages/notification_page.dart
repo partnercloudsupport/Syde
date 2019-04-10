@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ikode/pages/notification_detailed_page.dart';
 import 'package:intl/intl.dart';
 
 class NotificationScreen extends StatefulWidget {
@@ -15,7 +16,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         appBar: AppBar(
           elevation: 0.0,
           backgroundColor: Colors.blue,
-          title: Text("Notofication"),
+          title: Text("Notification"),
           leading: IconButton(
               icon: Icon(
                 Icons.arrow_back,
@@ -58,6 +59,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Widget makeNotificationItem(Map data) {
     return InkWell(
       onTap: () {
+        //open another screen to display notification body
+        Navigator.push(context, MaterialPageRoute(
+            builder: (BuildContext context) =>
+                NotificationDetailedScreen(data)));
 
       },
       child: Padding(
