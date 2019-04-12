@@ -1,57 +1,56 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
+import 'package:ikode/syde_color.dart';
+import 'package:ikode/Bloc/chat_room_page_bloc.dart';
+import 'package:toast/toast.dart';
 
-class ChatRoom extends StatelessWidget {
+class ChatRoom extends StatefulWidget {
   final FirebaseUser user;
 
   ChatRoom(this.user);
 
   @override
-  Widget build(BuildContext context) {
-    return new MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: new ChatScreen(user),
-    );
-  }
+  _ChatRoomState createState() => _ChatRoomState();
 }
 
-class ChatScreen extends StatefulWidget {
-  final FirebaseUser user;
+class _ChatRoomState extends State<ChatRoom> {
+  final TextEditingController _textController = TextEditingController();
 
-  ChatScreen(this.user);
-
-  @override
-  _ChatScreenState createState() => _ChatScreenState();
-}
-
-class _ChatScreenState extends State<ChatScreen> {
-  final List<ChatMessage> _messages = <ChatMessage>[];
-  final TextEditingController _textController = new TextEditingController();
-  ScrollController _scrollController = ScrollController();
-  Firestore firestore = Firestore.instance;
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-
-
-  }
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      body: new Column(
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0.0,
+        backgroundColor: Colors.blue,
+        centerTitle: true,
+        title: Text("Syde Chat"),
+        leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            }),
+      ),
+      body: Column(
         //modified
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
-          //new
+          //
 
           Flexible(
-            //new
+            //
 
             child: StreamBuilder<QuerySnapshot>(
-              stream: Firestore.instance.collection('chatroom').orderBy('timestamp', descending: true).snapshots(),
+              stream: Firestore.instance
+                  .collection('chatroom')
+                  .orderBy('timestamp', descending: true)
+                  .snapshots(),
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.hasError) return Text('Error: ${snapshot.error}');
@@ -59,91 +58,93 @@ class _ChatScreenState extends State<ChatScreen> {
                   case ConnectionState.waiting:
                     return Text('Loading...');
                   default:
-                    return ListView(
-                      reverse: true,
-                      controller: _scrollController,
-                      children: snapshot.data.documents
-                          .map((DocumentSnapshot document) {
-                        return ChatMessage(
-                          text: document['message'],
-                          sender: document['sender'],
-                          photoUrl: document['photoUrl'],
-                        );
-//                          new ListTile(
-//                          title: new Text(document['message']),
-//                          subtitle: new Text(document['sender']),
-//                        );
-                      }).toList(),
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ListView(
+                        reverse: true,
+                        children: snapshot.data.documents
+                            .map((DocumentSnapshot document) {
+                          //display view for current user
+                          if (widget.user.uid == document['sender_id']) {
+                            return ChatMessageUser(document['message']);
+                          } else {
+                            //display view for other users
+                            return ChatMessage(
+                              text: document['message'],
+                              sender: document['sender'],
+                              photoUrl: document['photoUrl'],
+                              id: document['sender_id'],
+                            );
+                          }
+                        }).toList(),
+                      ),
                     );
                 }
               },
             ),
-//            child: StreamBuilder(
-//              stream: Firestore.instance.collection("chatroom").snapshots(),
-//              builder: (BuildContext context,
-//                  AsyncSnapshot<QuerySnapshot> snapshot) {
-//                snapshot.data.documents.map((e){
-//
-//                  print(e["message"]);
-//                });
-//
-//                return ListView.builder(
-//                  //new
-//                  padding: new EdgeInsets.all(8.0), //new
-//                  reverse: false, //new
-//                  itemBuilder: (_, int index) {
-//                    print(snapshot.data.documents[index].data);
-////                    return _messages[index];
-//                  }, //new
-//                  itemCount: _messages.length, //new
-//                );
-//              },
-//            ), //new
-          ), //new
-          Divider(height: 1.0), //new
+
+          ), //
+          Divider(height: 1.0), //
           Container(
-            //new
-            decoration: BoxDecoration(color: Theme.of(context).cardColor), //new
+            //
+            decoration: BoxDecoration(color: Theme
+                .of(context)
+                .cardColor), //
             child: _buildTextComposer(), //modified
-          ), //new
-        ], //new
+          ), //
+        ], //
       ),
     );
   }
 
   Widget _buildTextComposer() {
-    return new IconTheme(
-      //new
-      data: new IconThemeData(color: Theme.of(context).accentColor), //new
-      child: new Container(
-        //modified
-        margin: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: new Row(
+    return IconTheme(
+      //
+      data: IconThemeData(color: Theme
+          .of(context)
+          .accentColor), //
+      child: Container(
+        child: Row(
           children: <Widget>[
-            new Flexible(
-              child: new TextField(
-                controller: _textController,
-                onSubmitted: (text){
-                  _handleSubmitted(text,0);
 
+            Container(
+              child: IconButton(
+                  icon: Icon(
+                    Icons.photo,
+                    color: Colors.grey,
+                  ),
+                  onPressed: () {}),
+            ),
+            Flexible(
+              child: TextField(
+                controller: _textController,
+                onSubmitted: (text) {
+                  _handleSubmitted(text, 0);
                 },
                 decoration:
-                    new InputDecoration.collapsed(hintText: "Send a message"),
+                InputDecoration.collapsed(hintText: "Send a message"),
               ),
             ),
-            new Container(
-              margin: new EdgeInsets.symmetric(horizontal: 4.0),
-              child: new IconButton(
-                  icon: new Icon(Icons.send),
-                  onPressed: () => _handleSubmitted(_textController.text,0)),
+
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 4.0),
+              child: IconButton(
+                  icon: Icon(
+                    Icons.send,
+                  ),
+                  onPressed: () => _handleSubmitted(_textController.text, 0)),
             ),
           ],
         ),
-      ), //new
+      ), //
     );
   }
 
-  void _handleSubmitted(String text,int type) async {
+  void _handleSubmitted(String text, int type) async {
+    if (text
+        .trim()
+        .length < 1) return;
+
     _textController.clear();
 
     var map = {
@@ -151,79 +152,234 @@ class _ChatScreenState extends State<ChatScreen> {
       "message": text,
       "sender": widget.user.displayName,
       "type": type,
-      "timestamp":DateTime.now().millisecondsSinceEpoch.toString()
+      "sender_id": widget.user.uid,
+      "timestamp": DateTime
+          .now()
+          .millisecondsSinceEpoch
+          .toString()
     };
 
     DocumentReference documentReference = Firestore.instance
-        .collection("chatroom").document(DateTime.now().millisecondsSinceEpoch.toString());
+        .collection("chatroom")
+        .document(DateTime
+        .now()
+        .millisecondsSinceEpoch
+        .toString());
 
-    Firestore.instance.runTransaction((transaction) async{
-
+    Firestore.instance.runTransaction((transaction) async {
       await transaction.set(documentReference, map);
     });
-
-
-//    await Firestore.instance
-//        .collection("chatroom")
-//        .add(map);
-
-    _scrollController.animateTo(0.0, duration: Duration(milliseconds: 300), curve: Curves.easeOut);
-
-//    ChatMessage message = new ChatMessage(
-//      widget.user,
-//      //new
-//      text: text, //new
-//    ); //new
-//    setState(() {
-//      //new
-//      _messages.insert(0, message); //new
-//    });
   }
 }
 
-class ChatMessage extends StatelessWidget {
-  ChatMessage({this.sender, this.text, this.photoUrl});
+class ChatMessage extends StatefulWidget {
+  ChatMessage({this.sender, this.text, this.photoUrl, this.id});
 
-  final String text, sender, photoUrl;
+  final String text, sender, photoUrl, id;
+
+  @override
+  _ChatMessageState createState() => _ChatMessageState();
+}
+
+class _ChatMessageState extends State<ChatMessage> {
+  Color col = Color(getColorHexFromStr("F1EEEE"));
 
   @override
   Widget build(BuildContext context) {
-    return new Container(
-      margin: const EdgeInsets.symmetric(vertical: 10.0),
-      child: new Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          new Container(
-            margin: const EdgeInsets.only(right: 16.0),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Material(
-                elevation: 1.0,
-                shape: CircleBorder(),
-                color: Colors.transparent,
-                child: CircleAvatar(
-                  backgroundImage: NetworkImage("$photoUrl?height=500"),
-                  child: InkWell(
-                    onTap: () {
-                      //goto user profile
-                    },
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          col = Colors.grey;
+        });
+
+        _showBottomSheet(context, widget.text);
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 10.0),
+        child: Container(
+//      margin: const EdgeInsets.symmetric(vertical: 10.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              CircleAvatar(
+                radius: 20.0,
+                backgroundImage: NetworkImage("${widget.photoUrl}?height=500"),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 10.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(widget.sender,
+                          maxLines: 1,
+                          style: TextStyle(
+                              fontSize: 14.0, fontWeight: FontWeight.bold)),
+                      Container(
+                        margin: EdgeInsets.only(right: 80.0),
+                        padding: const EdgeInsets.all(5.0),
+                        child: Text(widget.text),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.0),
+                            color: col
+
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-            ),
-          ),
-          new Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              new Text(sender, style: Theme.of(context).textTheme.subhead),
-              new Container(
-                margin: const EdgeInsets.only(top: 5.0),
-                child: new Text(text),
-              ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }
+
+
+  void _showBottomSheet(context, text) async {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return WillPopScope(
+            onWillPop: _requestPop,
+            child: Wrap(
+              children: <Widget>[
+                ListTile(
+                  onTap: () {
+                    //close bottom sheet
+                    Navigator.pop(context);
+
+                    //copy text to clipboard
+                    Clipboard.setData(ClipboardData(text: text))
+                        .whenComplete(() {
+                      //when complete,display a toast
+                      Toast.show(
+                        "Copied", context, backgroundColor: Colors.grey,
+                        duration: 1,);
+                    }
+                    );
+
+                    //revert container to default color and rebuild the widget
+                    setState(() {
+                      col = col = Color(getColorHexFromStr("F1EEEE"));
+                    });
+                  },
+                  title: Icon(Icons.content_copy),
+                  subtitle: Center(child: Text("Copy")),
+                ),
+
+              ],
+            ),
+          );
+        }
+
+    );
+  }
+
+  Future<bool> _requestPop() {
+    //revert container to default color and rebuild the widget
+    setState(() {
+      col = col = Color(getColorHexFromStr("F1EEEE"));
+    });
+    return new Future.value(true);
+  }
+
+
 }
+
+class ChatMessageUser extends StatefulWidget {
+  final String body;
+
+  const ChatMessageUser(this.body);
+
+  @override
+  _ChatMessageUserState createState() => _ChatMessageUserState();
+}
+
+class _ChatMessageUserState extends State<ChatMessageUser> {
+
+
+  Color col = Colors.blue;
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 80.0, bottom: 10.0),
+        child: GestureDetector(
+            onLongPress: () {
+              setState(() {
+                col = Colors.blue[700];
+              });
+              _showBottomSheet(context, widget.body);
+            },
+
+            onTap: () => roomBloc.containerColor.add(Colors.grey),
+
+            child: Container(
+              padding: const EdgeInsets.all(5.0),
+              child: Text(
+                widget.body,
+                style: TextStyle(color: Colors.white),
+              ),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0), color: col),
+            )
+        ),
+      ),
+    );
+  }
+
+  void _showBottomSheet(context, text) async {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return WillPopScope(
+            onWillPop: _requestPop,
+            child: Wrap(
+              children: <Widget>[
+                ListTile(
+                  onTap: () {
+//
+                    //close bottom sheet
+                    Navigator.pop(context);
+
+                    //Copy text to clipboard
+                    Clipboard.setData(ClipboardData(text: text))
+                        .whenComplete(() {
+                      //when complete,display a toast
+                      Toast.show(
+                        "Copied", context, backgroundColor: Colors.grey,
+                        duration: 1,);
+                    });
+
+                    //revert container to default color and rebuild the widget
+                    setState(() {
+                      col = Colors.blue;
+                    });
+//
+                  },
+                  title: Icon(Icons.content_copy),
+                  subtitle: Center(child: Text("Copy")),
+                ),
+
+              ],
+            ),
+          );
+        }
+
+    );
+  }
+
+  Future<bool> _requestPop() {
+    //revert container to default color and rebuild the widget
+    setState(() {
+      col = Colors.blue;
+    });
+    return new Future.value(true);
+  }
+}
+
+
